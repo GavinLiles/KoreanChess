@@ -1,40 +1,29 @@
 import pygame
 import os
-# Initialize Pygame
-pygame.init()
-#get screen information
-os.environ['SDL_VIDEO_CENTERED'] = '1'
-info = pygame.display.Info()
-fullscreen_width, fullscreen_height = info.current_w, info.current_h
-
-
-# Set up the display window and make is resizeable
-screen = pygame.display.set_mode((fullscreen_width - 10, fullscreen_height - 50), pygame.RESIZABLE)  # width x height
-pygame.display.set_caption("Pygame Window")
-
-#set the font
-# font = pygame.font.Font('freesansbold.ttf', 20)
-# big_font = pygame.font.Font('freesansbold.ttf', 50)
-#game vars and img
-
 #pygame.draw.rect(screen, 'green', [screen_width/2-50,screen_height/2-50,100,100])
 # Main menu loop
-def main_menu():
-    run = True
-    background = pygame.image.load('assets/Janggi_Board.png').convert()
-   
-    while run:
-        screen_width, screen_height = screen.get_size()
-        background = pygame.transform.smoothscale(background, screen.get_size())
-        screen.blit(background, (0, 0))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+class MainMenu:
+    def __init__(self, screen):
+        self.screen = screen
+        self.run = True
 
-        # Update the display
-        pygame.display.update()
+        # Set the background image
+        self.background = pygame.image.load('assets/Janggi_Board.png').convert()
+    def display(self):
+        while self.run:
+            #Gets current screen width and height
+            screen_width, screen_height = self.screen.get_size()
+            #makes background image conform to current screen size
+            self.background = pygame.transform.smoothscale(self.background, self.screen.get_size())
+            self.screen.blit(self.background, (0, 0))
+            pygame.draw.rect(self.screen, 'green', [screen_width/2-50,screen_height/2-50,100,100])
+            #????
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
 
-    # Quit Pygame
-    pygame.quit()
+            # Update the display
+            pygame.display.update()
 
-main_menu()
+        # Quit Pygame
+        pygame.quit()
