@@ -21,16 +21,18 @@ pygame.display.set_caption("Pygame Window")
 # Main menu loop
 def main_menu():
     run = True
-    background = pygame.image.load('clote0.bmp').convert()
+    background = pygame.image.load('assets/Janggi_Board.png').convert()
+   
     while run:
         screen_width, screen_height = screen.get_size()
+        background = pygame.transform.smoothscale(background, screen.get_size())
         screen.blit(background, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
         # Update the display
-        pygame.display.flip()
+        pygame.display.update()
 
     # Quit Pygame
     pygame.quit()
