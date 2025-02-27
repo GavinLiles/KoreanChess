@@ -51,50 +51,50 @@ class TextureButton(Button):
         self.surface.blit(self.image, (self.x, self.y))
 
 
-if __name__ == "__main__":
-    import pygame
-    import os
+# if __name__ == "__main__":
+#     import pygame
+#     import os
 
-    # Initialize Pygame
-    pygame.init()
-    #get screen information
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
-    info = pygame.display.Info()
-    fullscreen_width, fullscreen_height = info.current_w, info.current_h
+#     # Initialize Pygame
+#     pygame.init()
+#     #get screen information
+#     os.environ['SDL_VIDEO_CENTERED'] = '1'
+#     info = pygame.display.Info()
+#     fullscreen_width, fullscreen_height = info.current_w, info.current_h
 
-    # Set up the display window and make is resizeable
-    screen = pygame.display.set_mode((fullscreen_width - 10, fullscreen_height - 50), pygame.RESIZABLE)  # width x height
-    pygame.display.set_caption("Pygame Window")
+#     # Set up the display window and make is resizeable
+#     screen = pygame.display.set_mode((fullscreen_width - 10, fullscreen_height - 50), pygame.RESIZABLE)  # width x height
+#     pygame.display.set_caption("Pygame Window")
 
-    button1 = Button(screen, 50, 50, 50, 50, color='red')
-    button2 = TextButton(screen, 50, 100, 100, 50, color='green', text="hello")
-    button3 = TextureButton(screen, 50, 150, 100, 110, image_file="assets\dog.JPG")
+#     button1 = Button(screen, 50, 50, 50, 50, color='red')
+#     button2 = TextButton(screen, 50, 100, 100, 50, color='green', text="hello")
+#     button3 = TextureButton(screen, 50, 150, 100, 110, image_file="assets\dog.JPG")
 
-    run = True
-    background = pygame.image.load('assets/Janggi_Board.png').convert()
+#     run = True
+#     background = pygame.image.load('assets/Janggi_Board.png').convert()
 
-    while run:
-        screen_width, screen_height = screen.get_size()
-        background = pygame.transform.smoothscale(background, screen.get_size())
-        screen.blit(background, (0, 0))
+#     while run:
+#         screen_width, screen_height = screen.get_size()
+#         background = pygame.transform.smoothscale(background, screen.get_size())
+#         screen.blit(background, (0, 0))
         
-        button1.render()
-        button2.render()
-        button3.render()
+#         button1.render()
+#         button2.render()
+#         button3.render()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 run = False
 
-            if button1.is_clicked(event):
-                print("button 1 pressed")
-            if button2.is_clicked(event):
-                print("button 2 pressed")
-            if button3.is_clicked(event):
-                print("button3 pressed")
+#             if button1.is_clicked(event):
+#                 print("button 1 pressed")
+#             if button2.is_clicked(event):
+#                 print("button 2 pressed")
+#             if button3.is_clicked(event):
+#                 print("button3 pressed")
 
-        # Update the display
-        pygame.display.update()
+#         # Update the display
+#         pygame.display.update()
 
-    # Quit Pygame
-    pygame.quit()
+#     # Quit Pygame
+#     pygame.quit()

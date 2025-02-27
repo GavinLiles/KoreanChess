@@ -15,6 +15,10 @@ def main():
     clock = pygame.time.Clock()
     fps = 60
 
+    # create logo for window
+    icon = pygame.image.load("assets/Pieces/Cho_King.png")
+    pygame.display.set_icon(icon)
+
     #get screen information
     info = pygame.display.Info()
     fullscreen_width, fullscreen_height = info.current_w, info.current_h
@@ -22,12 +26,12 @@ def main():
 
     # Set up the display window and make is resizeable
     screen = pygame.display.set_mode((fullscreen_width - 10, fullscreen_height - 50), pygame.RESIZABLE)  # width x height
-    pygame.display.set_caption("Pygame Window")
+    pygame.display.set_caption("Korean Chess")
 
     #start game loop
     run = True
     while True:
-# find matching event calls by player to pygame event calls
+        # find matching event calls by player to pygame event calls
         for event in pygame.event.get():
 			# if player closes window
             if event.type == pygame.QUIT:
