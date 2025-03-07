@@ -4,12 +4,15 @@ import pygame
 
 class Button:
 
-    def __init__(self, surface, x, y, width, height, color='white'):
+    def __init__(self, surface, pos, size, func=None, color='white', hover_color='grey'):
         self.surface = surface
+        self.hover_color = hover_color
+        self.normal_color = color
         self.color = color
-        self.x, self.y = x, y
-        self.width, self.height = width, height
-        self.rect = pygame.Rect(x, y, width, height)
+        self.x, self.y = pos
+        self.width, self.height = size
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.func = func
 
     def render(self):
         pygame.draw.rect(self.surface, self.color, self.rect)
@@ -19,82 +22,92 @@ class Button:
             return True
         return False
 
-    def is_clicked(self, event):
-        mouse_pos = pygame.mouse.get_pos()
+    def is_clicked(self, event, mouse_pos):
         if self.rect.collidepoint(mouse_pos) and self.is_left_click(event):
             return True
         return False
-    
+
+    def is_hovered(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            return True
+        return False
+
+    def process(self, event, mouse_pos):
+        if self.is_hovered(mouse_pos):
+            self.color = self.hover_color
+        else:
+            self.color = self.normal_color
+        if self.is_clicked(event, mouse_pos):
+            self.func
+
+
 class TextButton(Button):
     
-    def __init__(self, surface, x, y, width, height, color, text=""):
-        super().__init__(surface, x, y, width, height, color)
-        
-        # creating the text to render on button
+    def __init__(self, surface, pos, size, text="", func=None, color='white', hover_color='grey'):
+        super().__init__(surface, pos, size, func, color, hover_color)
         pygame.font.init()
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
         self.text_surface = self.font.render(text, False, 'black')
+        self.text_rect = self.text_surface.get_rect(center=(self.x, self.y))
     
     def render(self):
-        pygame.draw.rect(self.surface, self.color, self.rect)
-        self.surface.blit(self.text_surface, (self.x, self.y))
+        super().render()
+        self.surface.blit(self.text_surface, self.text_rect)
 
 class TextureButton(Button):
-    pass
-    def __init__(self, surface, x, y, width, height, image_file):
-        super().__init__(surface, x, y, width, height, color='white')
+
+    def __init__(self, surface, pos, size, image_file, func, color='white', hover_color='grey'):
+        super().__init__(surface, pos, size, func, color, hover_color)
         self.image = pygame.image.load(image_file)
-        self.image = pygame.transform.scale(self.image, (width, height))
+        self.image = pygame.transform.scale(self.image, size)
 
     def render(self):
         super().render()
         self.surface.blit(self.image, (self.x, self.y))
 
 
-# if __name__ == "__main__":
-#     import pygame
-#     import os
+def button_func():
+    print("presed")
 
-#     # Initialize Pygame
-#     pygame.init()
-#     #get screen information
-#     os.environ['SDL_VIDEO_CENTERED'] = '1'
-#     info = pygame.display.Info()
-#     fullscreen_width, fullscreen_height = info.current_w, info.current_h
+if __name__ == "__main__":
+    import pygame
+    import os
 
-#     # Set up the display window and make is resizeable
-#     screen = pygame.display.set_mode((fullscreen_width - 10, fullscreen_height - 50), pygame.RESIZABLE)  # width x height
-#     pygame.display.set_caption("Pygame Window")
+    # Initialize Pygame
+    pygame.init()
+    #get screen information
+    os.environ['SDL_VIDEO_CENTERED'] = '1'
+    info = pygame.display.Info()
+    screen = pygame.display.set_mode((info.current_w - 10, info.current_h - 50), pygame.RESIZABLE)  # width x height
 
-#     button1 = Button(screen, 50, 50, 50, 50, color='red')
-#     button2 = TextButton(screen, 50, 100, 100, 50, color='green', text="hello")
-#     button3 = TextureButton(screen, 50, 150, 100, 110, image_file="assets\dog.JPG")
+    button1 = Button(screen, [50, 50], [50, 50], func=button_func())
+    button2 = TextButton(screen, [50, 100], [100, 50], color='green', text="hello", func=button_func())
+    button3 = TextureButton(screen, [50, 150], [100, 110], image_file="assets\dog.JPG", func=button_func())
 
-#     run = True
-#     background = pygame.image.load('assets/Janggi_Board.png').convert()
+    run = True
+    background = pygame.image.load('assets/Janggi_Board.png').convert()
 
-#     while run:
-#         screen_width, screen_height = screen.get_size()
-#         background = pygame.transform.smoothscale(background, screen.get_size())
-#         screen.blit(background, (0, 0))
+    while run:
+        screen_width, screen_height = screen.get_size()
+        background = pygame.transform.smoothscale(background, screen.get_size())
+        screen.blit(background, (0, 0))
+        mouse_pos = pygame.mouse.get_pos()
         
-#         button1.render()
-#         button2.render()
-#         button3.render()
+        button1.render()
+        button2.render()
+        button3.render()
 
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 run = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
 
-#             if button1.is_clicked(event):
-#                 print("button 1 pressed")
-#             if button2.is_clicked(event):
-#                 print("button 2 pressed")
-#             if button3.is_clicked(event):
-#                 print("button3 pressed")
+            button1.process(event, mouse_pos)
+            button2.process(event, mouse_pos)
+            button3.process(event, mouse_pos)
 
-#         # Update the display
-#         pygame.display.update()
 
-#     # Quit Pygame
-#     pygame.quit()
+        # Update the display
+        pygame.display.update()
+
+    # Quit Pygame
+    pygame.quit()
