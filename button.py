@@ -56,7 +56,7 @@ class TextButton(Button):
 
 class TextureButton(Button):
 
-    def __init__(self, pos, size, image_file, func, color='white', hover_color='grey'):
+    def __init__(self, pos, size, image_file, func=None, color='white', hover_color='grey'):
         super().__init__(pos, size, func, color, hover_color)
         self.set_image(image_file)
         

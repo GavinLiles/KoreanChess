@@ -2,59 +2,89 @@
 from button import *
 
 class Piece(TextureButton):
-    def __init__(self, pos, size, func, team=None, image_file='assets/Pieces/Blank_Piece.png'):
-        super().__init__(pos, size, image_file, func)
+    def __init__(self, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
+        super().__init__(pos, size, image_file)
         self.value = 0       # the value the piece is worth
         self.team = None     # team of the piece
         self.location = None # where the piece is located on the board
+
+    def __str__(self):
+        return 'Piece'
     
 class Pawn(Piece):
-    def __init__(self, pos, size, func, team=None): 
-        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Pawn.png', func=func)
+    def __init__(self, pos, size, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Pawn.png')
         self.value = 2
+        self.func = self.get_possible_moves
 
-    def get_possible_moves():
-        pass
+    def __str__(self):
+        return 'Pawn'
+
+    def get_possible_moves(self):
+        print('Pawn clicked')
 
 class Advisor(Piece):
-    def __init__(self, pos, size, func, team=None): 
-        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Advisor.png', func=func)
+    def __init__(self, pos, size, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Advisor.png')
         self.value = 3
+        self.func = self.get_possible_moves
 
-    def get_possible_moves():
-        pass
+    def __str__(self):
+        return 'Advisor'
+
+    def get_possible_moves(self):
+        print('Advisor clicked')
 
 class Elephant(Piece):
-    def __init__(self, pos, size, func, team=None): 
-        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Elephant.png', func=func)
+    def __init__(self, pos, size, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Elephant.png')
         self.value = 3
+        self.func = self.get_possible_moves
 
-    def get_possible_moves():
-        pass
+    def __str__(self):
+        return 'Elephant'
+
+    def get_possible_moves(self):
+        print('Pawn clicked')
 
 class Horse(Piece):
-    def __init__(self, pos, size, func, team=None): 
-        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Horse.png', func=func)
+    def __init__(self, pos, size, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Horse.png')
         self.value = 5
+        self.func = self.get_possible_moves
 
-    def get_possible_moves():
-        pass
+    def __str__(self):
+        return 'Horse'
+
+    def get_possible_moves(self):
+        print('Horse clicked')
+
 
 class Cannon(Piece):
-    def __init__(self, pos, size, func, team=None): 
-        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Cannon.png', func=func)
+    def __init__(self, pos, size, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Cannon.png')
         self.value = 7
+        self.func = self.get_possible_moves
+    
+    def __str__(self):
+        return 'Cannon'
 
-    def get_possible_moves():
-        pass
+    def get_possible_moves(self):
+        print('Cannon clicked')
+
 
 class Chariot(Piece):
-    def __init__(self, pos, size, func, team=None): 
-        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Chariot.png', func=func)
+    def __init__(self, pos, size, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Chariot.png')
         self.value = 13
+        self.func = self.get_possible_moves
+    
+    def __str__(self):
+        return 'Chariot'
 
-    def get_possible_moves():
-        pass
+    def get_possible_moves(self):
+        print('Chariot clicked')
+
 
 if __name__ == '__main__':
     import pygame
@@ -69,10 +99,10 @@ if __name__ == '__main__':
         print("click")
         
     pieces = [ 
-        Chariot([50, 100], [50, 50], func=fun, team='cho'),
-        Pawn([100, 100], [50, 50], func=fun, team='cho'),
-        Cannon([150, 100], [50, 50], func=fun, team='cho'),
-        Horse([200, 100], [50, 50], func=fun, team='cho')
+        Chariot([50, 100], [50, 50], team='cho'),
+        Pawn([100, 100], [50, 50], team='cho'),
+        Cannon([150, 100], [50, 50], team='cho'),
+        Horse([200, 100], [50, 50], team='cho')
     ]
 
     while run:
