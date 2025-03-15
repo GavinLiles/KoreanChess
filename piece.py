@@ -2,55 +2,55 @@
 from button import *
 
 class Piece(TextureButton):
-    def __init__(self, surface, pos, size, func, team=None, image_file='assets/Pieces/Blank_Piece.png'):
-        super().__init__(surface, pos, size, image_file, func)
+    def __init__(self, pos, size, func, team=None, image_file='assets/Pieces/Blank_Piece.png'):
+        super().__init__(pos, size, image_file, func)
         self.value = 0       # the value the piece is worth
         self.team = None     # team of the piece
         self.location = None # where the piece is located on the board
     
 class Pawn(Piece):
-    def __init__(self, surface, pos, size, func, team=None): 
-        super().__init__(surface, pos, size, image_file='assets/Pieces/Cho_Pawn.png', func=func)
+    def __init__(self, pos, size, func, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Pawn.png', func=func)
         self.value = 2
 
     def get_possible_moves():
         pass
 
 class Advisor(Piece):
-    def __init__(self, surface, pos, size, func, team=None): 
-        super().__init__(surface, pos, size, image_file='assets/Pieces/Cho_Advisor.png', func=func)
+    def __init__(self, pos, size, func, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Advisor.png', func=func)
         self.value = 3
 
     def get_possible_moves():
         pass
 
 class Elephant(Piece):
-    def __init__(self, surface, pos, size, func, team=None): 
-        super().__init__(surface, pos, size, image_file='assets/Pieces/Cho_Elepahnt.png', func=func)
+    def __init__(self, pos, size, func, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Elephant.png', func=func)
         self.value = 3
 
     def get_possible_moves():
         pass
 
 class Horse(Piece):
-    def __init__(self, surface, pos, size, func, team=None): 
-        super().__init__(surface, pos, size, image_file='assets/Pieces/Cho_Horse.png', func=func)
+    def __init__(self, pos, size, func, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Horse.png', func=func)
         self.value = 5
 
     def get_possible_moves():
         pass
 
 class Cannon(Piece):
-    def __init__(self, surface, pos, size, func, team=None): 
-        super().__init__(surface, pos, size, image_file='assets/Pieces/Cho_Cannon.png', func=func)
+    def __init__(self, pos, size, func, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Cannon.png', func=func)
         self.value = 7
 
     def get_possible_moves():
         pass
 
 class Chariot(Piece):
-    def __init__(self, surface, pos, size, func, team=None): 
-        super().__init__(surface, pos, size, image_file='assets/Pieces/Cho_Chariot.png', func=func)
+    def __init__(self, pos, size, func, team=None): 
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Chariot.png', func=func)
         self.value = 13
 
     def get_possible_moves():
@@ -69,9 +69,10 @@ if __name__ == '__main__':
         print("click")
         
     pieces = [ 
-        Chariot(screen, [50, 100], [50, 50], func=fun, team='cho'),
-        Pawn(screen, [100, 100], [50, 50], func=fun, team='cho'),
-        Cannon(screen, [150, 100], [50, 50], func=fun, team='cho')
+        Chariot([50, 100], [50, 50], func=fun, team='cho'),
+        Pawn([100, 100], [50, 50], func=fun, team='cho'),
+        Cannon([150, 100], [50, 50], func=fun, team='cho'),
+        Horse([200, 100], [50, 50], func=fun, team='cho')
     ]
 
     while run:
@@ -80,10 +81,10 @@ if __name__ == '__main__':
         mouse_pos = pygame.mouse.get_pos()
 
         for piece in pieces:
-            piece.render()
+            piece.render(screen)
 
-        
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 run = False
             for piece in pieces:
