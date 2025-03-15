@@ -5,7 +5,7 @@ class Board():
 
     def __init__(self):
         self.background = pygame.image.load('assets/Janggi_Board.png').convert()
-        self.grid = [ [None] * 9 for _ in range(10)]
+        self.grid = [ [None] * 10 for _ in range(9)]
 
     def __str__(self):
         return 'Board'
@@ -53,8 +53,8 @@ if __name__ == '__main__':
     print(board_size)
     piece_size = (50, 50)
     move_scale = [pos/ind + 5 for pos, ind in zip(board_size, (9, 10))]
-    grid_pos = (0, 2)
-    piece_pos = [(move_scale[0]*grid_pos[0]-(piece_size[0]/2)), (move_scale[1]*grid_pos[1]-(piece_size[1]/2))]
+    grid_pos = (8, 9)
+    piece_pos = [x*y-(z/2) for x, y, z in zip(move_scale, grid_pos, piece_size)]
 
     p = Pawn(piece_pos, piece_size, 'cho')
     b.insert_piece(grid_pos, p)
