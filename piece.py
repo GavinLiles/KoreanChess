@@ -10,7 +10,23 @@ class Piece(TextureButton):
 
     def __str__(self):
         return 'Piece'
-    
+
+    def set_position(self, pos:tuple[int]):
+        self.pos = pos
+
+class King(Piece):
+    def __init__(self, pos, size, team=None):
+        super().__init__(pos, size, image_file='assets/Pieces/I_Cho_King.png')
+        self.value = 5
+        self.func = self.get_possible_moves
+
+    def __str__(self):
+        return 'King'
+
+    def get_possible_moves(self):
+        print('King clicked')
+
+
 class Pawn(Piece):
     def __init__(self, pos, size, team=None): 
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Pawn.png')
