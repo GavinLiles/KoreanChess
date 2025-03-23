@@ -1,5 +1,9 @@
 # test.py
 from piece import *
+from math import isclose
+
+MARGIN = 100
+RATIO = 880 / 982
 
 class Board():
 
@@ -14,6 +18,7 @@ class Board():
         self.__piece_offset = tuple([i/2 for i in self.__piece_size]) # offset for piece rendering
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
         self.init_pieces()
+        self.update(surface)
 
     def __calculate_render_pos(self, grid_position:tuple[int]):
         x = grid_position[1]*self.__row_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[0]
@@ -85,21 +90,28 @@ class Board():
         except IndexError:
             print(f'given index {pos} is not within bounds.')
 
-    def upadte_board_size(self):
+    def update(self, surface):
         self.__board_size = self.background.get_size()
-    
-    def upadte_piece_spacing(self):
+        self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
         self.__row_spacing = self.__board_size[0] / 8
         self.__col_spacing = self.__board_size[1] / 9
 
-    def update_piece_positions(self):
-        # STOPPING POINT
-        # trying to figure out how to update the position of all the pieces
-        # in the peices list so they stay on the board if the board is moved.
-        pass
+        # if the window is not in ratio of the board,
+        # set board's height off window,
+        # and use the ratio of the board to keep it scaled properly
+        surface_size = surface.get_size()
+        if not isclose(min(surface_size)*(1+RATIO), max(surface_size)):
+            scale = (surface_size[1]*RATIO, surface_size[1]-MARGIN)
 
-    def update_screen_center(self, surface):
-        self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
+        self.background = pygame.transform.scale(self.background, scale)
+        self.update_piece_positions()
+
+    def update_piece_positions(self):
+        for i in range(10):
+            for j in range(9):
+                if self.grid[i][j]:
+                    pos = self.__calculate_render_pos((i, j))
+                    self.grid[i][j].set_position(pos)
 
     def render(self, surface):
         self.__render_board(surface)
@@ -116,14 +128,15 @@ class Board():
 
 if __name__ == '__main__':
     import pygame
-    import os
 
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((1000, 1000), pygame.RESIZABLE)
     run = True
+    WIDTH_LIMIT_MIN, HEIGHT_LIMIT_MAX = 800, 800
 
     b = Board(screen)
+    b.update(screen)
 
     while run:
         mouse_pos = pygame.mouse.get_pos()
@@ -134,13 +147,21 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 run = False
                 print(b.background.get_size())
+
+            elif event.type == pygame.VIDEORESIZE:
+                width, height = event.size
+                if width < WIDTH_LIMIT_MIN:
+                    width = WIDTH_LIMIT_MIN
+                if height < HEIGHT_LIMIT_MAX:
+                    height = HEIGHT_LIMIT_MAX
+                screen = pygame.display.set_mode((width, height), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
+                b.update(screen)
+
             
             for piece in b.pieces:
                 piece.process(event, mouse_pos)
 
         pygame.display.update()
-        b.update_screen_center(screen)
-
 
     # Quit Pygame
     pygame.quit()

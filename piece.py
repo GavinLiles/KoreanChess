@@ -13,6 +13,7 @@ class Piece(TextureButton):
 
     def set_position(self, pos:tuple[int]):
         self.pos = pos
+        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
 
 class King(Piece):
     def __init__(self, pos, size, team=None):
