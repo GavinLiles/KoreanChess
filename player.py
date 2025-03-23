@@ -1,9 +1,6 @@
 # player.py
 from piece import *
 
-def f():
-    print("click")
-
 class Player():
     def __init__(self, color):
         self.PIECE_SIZE = (50, 50)
@@ -12,15 +9,7 @@ class Player():
 
     def __init_pieces(self):
         self.pieces = []
-        for i in range(4):
-            self.pieces.append(Pawn([(100 + i*50), 100], self.PIECE_SIZE, self.color))
-        for i in range(2):
-            self.pieces.append(Chariot ([(100 + i*100), 150], self.PIECE_SIZE, self.color))
-            self.pieces.append(Horse   ([(100 + i*100), 200], self.PIECE_SIZE, self.color))
-            self.pieces.append(Elephant([(100 + i*100), 250], self.PIECE_SIZE, self.color))
-            self.pieces.append(Cannon  ([(100 + i*100), 300], self.PIECE_SIZE, self.color))
-            self.pieces.append(Advisor ([(100 + i*100), 350], self.PIECE_SIZE, self.color))
-
+        
     def render_peices(self, surface):
         for piece in self.pieces:
             piece.render(surface)

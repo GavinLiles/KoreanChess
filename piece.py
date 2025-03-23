@@ -1,6 +1,8 @@
 # piece.py
 from button import *
 
+PATH = 'assets/Pieces/' # path to piece images
+
 class Piece(TextureButton):
     def __init__(self, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
         super().__init__(pos, size, image_file)
@@ -15,8 +17,14 @@ class Piece(TextureButton):
         self.pos = pos
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
 
+    def __calculate_render_pos(self, grid_position:tuple[int]):
+        x = grid_position[1]*self.__row_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[0]
+        y = grid_position[0]*self.__col_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[1]
+        return (x, y)
+
+
 class King(Piece):
-    def __init__(self, pos, size, team=None):
+    def __init__(self, pos, size, team=None, international=True):
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_King.png')
         self.value = 5
         self.func = self.get_possible_moves
@@ -27,9 +35,8 @@ class King(Piece):
     def get_possible_moves(self):
         print('King clicked')
 
-
 class Pawn(Piece):
-    def __init__(self, pos, size, team=None): 
+    def __init__(self, pos, size, team=None, international=True): 
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Pawn.png')
         self.value = 2
         self.func = self.get_possible_moves
@@ -41,7 +48,7 @@ class Pawn(Piece):
         print('Pawn clicked')
 
 class Advisor(Piece):
-    def __init__(self, pos, size, team=None): 
+    def __init__(self, pos, size, team=None, international=True): 
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Advisor.png')
         self.value = 3
         self.func = self.get_possible_moves
@@ -53,7 +60,7 @@ class Advisor(Piece):
         print('Advisor clicked')
 
 class Elephant(Piece):
-    def __init__(self, pos, size, team=None): 
+    def __init__(self, pos, size, team=None, international=True): 
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Elephant.png')
         self.value = 3
         self.func = self.get_possible_moves
@@ -65,7 +72,7 @@ class Elephant(Piece):
         print('Pawn clicked')
 
 class Horse(Piece):
-    def __init__(self, pos, size, team=None): 
+    def __init__(self, pos, size, team=None, international=True): 
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Horse.png')
         self.value = 5
         self.func = self.get_possible_moves
@@ -78,7 +85,7 @@ class Horse(Piece):
 
 
 class Cannon(Piece):
-    def __init__(self, pos, size, team=None): 
+    def __init__(self, pos, size, team=None, international=True): 
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Cannon.png')
         self.value = 7
         self.func = self.get_possible_moves
@@ -91,7 +98,8 @@ class Cannon(Piece):
 
 
 class Chariot(Piece):
-    def __init__(self, pos, size, team=None): 
+    def __init__(self, pos, size, team=None, international=True):
+        # image_file = team.capitalize()
         super().__init__(pos, size, image_file='assets/Pieces/I_Cho_Chariot.png')
         self.value = 13
         self.func = self.get_possible_moves

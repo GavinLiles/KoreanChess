@@ -9,14 +9,12 @@ class Board():
 
     def __init__(self, surface):
         self.background = pygame.image.load('assets/Janggi_Board.png').convert()
+        self.boarder = pygame.image.load('assets/Janggi_Board_Border.png').convert()
         self.grid = [ [None] * 9 for _ in range(10)] # array representation of board
         self.pieces = [] # NOTE: probably temp variable. will be replaced by player object
-        self.__board_size = self.background.get_size()
-        self.__row_spacing = self.__board_size[0] / 8
-        self.__col_spacing = self.__board_size[1] / 9
-        self.__piece_size = (50, 50)
-        self.__piece_offset = tuple([i/2 for i in self.__piece_size]) # offset for piece rendering
+        self.update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
+        self.update_piece_size((75, 75))
         self.init_pieces()
         self.update(surface)
 
@@ -26,54 +24,23 @@ class Board():
         return (x, y)
 
     def init_pieces(self):
-        # KING
-        pos = (8,4)
-        render_pos = self.__calculate_render_pos(pos)
-        p = King(render_pos, self.__piece_size, team='cho')
-        self.pieces.append(p)
-        self.insert_piece(pos, p)
+        # locations on board
+        pieces = {
+            King: [(8, 4)],
+            Advisor: [(9, 3), (9, 5)],
+            Horse: [(9, 2), (9, 6)],
+            Chariot: [(9, 0), (9, 8)],
+            Elephant: [(9, 1), (9, 7)],
+            Cannon: [(7, 1), (7, 7)],
+            Pawn: [(6, 0), (6, 2), (6, 4), (6, 6), (6, 8)],
+        }
 
-        # ADVISOR
-        for pos in [(9,3), (9,5)]:
-            render_pos = self.__calculate_render_pos(pos)
-            p = Advisor(render_pos, self.__piece_size, team='cho')
-            self.pieces.append(p)
-            self.insert_piece(pos, p)
-
-        # HORSE
-        for pos in [(9,2), (9,6)]:
-            render_pos = self.__calculate_render_pos(pos)
-            p = Horse(render_pos, self.__piece_size, team='cho')
-            self.pieces.append(p)
-            self.insert_piece(pos, p)
-
-        # CHARIOT
-        for pos in [(9,0), (9,8)]:
-            render_pos = self.__calculate_render_pos(pos)
-            p = Chariot(render_pos, self.__piece_size, team='cho')
-            self.pieces.append(p)
-            self.insert_piece(pos, p)
-
-        # ELEPHANT
-        for pos in [(9,1), (9,7)]:
-            render_pos = self.__calculate_render_pos(pos)
-            p = Elephant(render_pos, self.__piece_size, team='cho')
-            self.pieces.append(p)
-            self.insert_piece(pos, p)
-
-        # CANNON
-        for pos in [(7,1), (7,7)]:
-            render_pos = self.__calculate_render_pos(pos)
-            p = Cannon(render_pos, self.__piece_size, team='cho')
-            self.pieces.append(p)
-            self.insert_piece(pos, p)
-
-        # PAWN
-        for pos in [(6,0), (6,2), (6,4), (6,6), (6,8)]:
-            render_pos = self.__calculate_render_pos(pos)
-            p = Pawn(render_pos, self.__piece_size, team='cho')
-            self.pieces.append(p)
-            self.insert_piece(pos, p)
+        for piece_class, positions in pieces.items():
+            for pos in positions:
+                render_pos = self.__calculate_render_pos(pos)
+                p = piece_class(render_pos, self.__piece_size, team='cho')
+                self.pieces.append(p)
+                self.insert_piece(pos, p)
 
     def __str__(self):
         return 'Board'
@@ -84,25 +51,24 @@ class Board():
                 print(col, end=' ')
             print()
 
-    def insert_piece(self, pos:tuple[int], item):
+    def insert_piece(self, pos:tuple[int], item:Piece):
         try:
             self.grid[pos[0]][pos[1]] = item
         except IndexError:
             print(f'given index {pos} is not within bounds.')
 
     def update(self, surface):
-        self.__board_size = self.background.get_size()
+        self.update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
-        self.__row_spacing = self.__board_size[0] / 8
-        self.__col_spacing = self.__board_size[1] / 9
 
+        surface_size = surface.get_size()
         # if the window is not in ratio of the board,
         # set board's height off window,
         # and use the ratio of the board to keep it scaled properly
-        surface_size = surface.get_size()
         if not isclose(min(surface_size)*(1+RATIO), max(surface_size)):
             scale = (surface_size[1]*RATIO, surface_size[1]-MARGIN)
 
+        self.boarder = pygame.transform.scale(self.boarder, surface_size)
         self.background = pygame.transform.scale(self.background, scale)
         self.update_piece_positions()
 
@@ -112,6 +78,15 @@ class Board():
                 if self.grid[i][j]:
                     pos = self.__calculate_render_pos((i, j))
                     self.grid[i][j].set_position(pos)
+
+    def update_piece_size(self, size:tuple[int]):
+        self.__piece_size = size
+        self.__piece_offset = tuple([i/2 for i in self.__piece_size]) # offset for piece rendering
+
+    def update_board_size(self):
+        self.__board_size = self.background.get_size()
+        self.__row_spacing = self.__board_size[0] / 8
+        self.__col_spacing = self.__board_size[1] / 9
 
     def render(self, surface):
         self.__render_board(surface)
@@ -123,6 +98,7 @@ class Board():
 
     def __render_board(self, surface):
         board_pos = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
+        surface.blit(self.boarder, (0, 0))
         surface.blit(self.background, board_pos)
 
 
@@ -131,7 +107,7 @@ if __name__ == '__main__':
 
     pygame.init()
     info = pygame.display.Info()
-    screen = pygame.display.set_mode((1000, 1000), pygame.RESIZABLE)
+    screen = pygame.display.set_mode((1000, 1000)) # pygame.RESIZABLE)
     run = True
     WIDTH_LIMIT_MIN, HEIGHT_LIMIT_MAX = 800, 800
 
