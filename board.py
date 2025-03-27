@@ -38,7 +38,7 @@ class Board():
         for piece_class, positions in pieces.items():
             for pos in positions:
                 render_pos = self.__calculate_render_pos(pos)
-                p = piece_class(render_pos, self.__piece_size, team='cho')
+                p = piece_class(pos, render_pos, self.__piece_size, team='cho')
                 self.pieces.append(p)
                 self.insert_piece(pos, p)
 
@@ -51,7 +51,7 @@ class Board():
                 print(col, end=' ')
             print()
 
-    def insert_piece(self, pos:tuple[int], item:Piece):
+    def insert_piece(self, pos:tuple[int], item):
         try:
             self.grid[pos[0]][pos[1]] = item
         except IndexError:
@@ -77,7 +77,7 @@ class Board():
             for j in range(9):
                 if self.grid[i][j]:
                     pos = self.__calculate_render_pos((i, j))
-                    self.grid[i][j].set_position(pos)
+                    self.grid[i][j].set_position((i, j), pos)
 
     def update_piece_size(self, size:tuple[int]):
         self.__piece_size = size
@@ -135,7 +135,7 @@ if __name__ == '__main__':
 
             
             for piece in b.pieces:
-                piece.process(event, mouse_pos)
+                piece.process(b, event, mouse_pos)
 
         pygame.display.update()
 
