@@ -12,19 +12,35 @@ class Board():
         self.boarder = pygame.image.load('assets/Janggi_Board_Border.png').convert()
         self.grid = [ [None] * 9 for _ in range(10)] # array representation of board
         self.pieces = [] # NOTE: probably temp variable. will be replaced by player object
-        self.update_board_size()
+        self.__update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
         self.update_piece_size((75, 75))
         self.init_pieces()
         self.update(surface)
 
-    def __calculate_render_pos(self, grid_position:tuple[int]):
+    def at(self, pos:tuple[int]):
+        try:
+            pos = self.grid[pos[0]][pos[1]]
+            if pos:
+                return pos
+            return None
+        except IndexError:
+            return None
+
+    def __calculate_render_pos(self, grid_position:tuple[int]) -> tuple[float]:
         x = grid_position[1]*self.__row_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[0]
         y = grid_position[0]*self.__col_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[1]
         return (x, y)
+    
+    def is_pos_avaliable(self, pos:tuple[int]) -> bool:
+        try:
+            if self.grid[pos[0]][pos[1]] is None:
+                return True
+            return False
+        except IndexError:
+            return False
 
     def init_pieces(self):
-        # locations on board
         pieces = {
             King: [(8, 4)],
             Advisor: [(9, 3), (9, 5)],
@@ -48,7 +64,7 @@ class Board():
     def print_grid(self):
         for row in self.grid:
             for col in row:
-                print(col, end=' ')
+                print(f'{str(col):>9}', end='')
             print()
 
     def insert_piece(self, pos:tuple[int], item):
@@ -58,7 +74,7 @@ class Board():
             print(f'given index {pos} is not within bounds.')
 
     def update(self, surface):
-        self.update_board_size()
+        self.__update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
 
         surface_size = surface.get_size()
@@ -70,9 +86,9 @@ class Board():
 
         self.boarder = pygame.transform.scale(self.boarder, surface_size)
         self.background = pygame.transform.scale(self.background, scale)
-        self.update_piece_positions()
+        self.__update_piece_positions()
 
-    def update_piece_positions(self):
+    def __update_piece_positions(self):
         for i in range(10):
             for j in range(9):
                 if self.grid[i][j]:
@@ -83,16 +99,13 @@ class Board():
         self.__piece_size = size
         self.__piece_offset = tuple([i/2 for i in self.__piece_size]) # offset for piece rendering
 
-    def update_board_size(self):
+    def __update_board_size(self):
         self.__board_size = self.background.get_size()
         self.__row_spacing = self.__board_size[0] / 8
         self.__col_spacing = self.__board_size[1] / 9
 
     def render(self, surface):
         self.__render_board(surface)
-        self.__render_pieces(surface)
-
-    def __render_pieces(self, surface):
         for piece in self.pieces:
             piece.render(surface)
 
@@ -123,6 +136,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 run = False
                 print(b.background.get_size())
+                b.print_grid()
 
             elif event.type == pygame.VIDEORESIZE:
                 width, height = event.size
