@@ -114,7 +114,6 @@ class Board():
         surface.blit(self.boarder, (0, 0))
         surface.blit(self.background, board_pos)
 
-
 if __name__ == '__main__':
     import pygame
 
@@ -136,7 +135,6 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 run = False
                 print(b.background.get_size())
-                b.print_grid()
 
             elif event.type == pygame.VIDEORESIZE:
                 width, height = event.size

@@ -32,12 +32,13 @@ class Piece(TextureButton):
 
     def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
         curr_pos = self.get_position()
+        valid_spots = []
         # iterate through list and see if it is valid position
         for delta in possible_spots:
             pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
-            if not board.is_pos_avaliable(pos):
-                possible_spots.remove(delta)
-        return possible_spots
+            if board.is_pos_avaliable(pos):
+                valid_spots.append(delta)
+        return valid_spots
 
     def is_in_palace(self, pos:tuple[int]) -> bool:
         PALACE_SPOTS = [
@@ -55,8 +56,17 @@ class Piece(TextureButton):
             return True
         return False
 
+class Royalty(Piece):
+    def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
+        super().__init__(grid_pos, pos, size, team, image_file)
 
-class King(Piece):
+    def __str__(self):
+        return super().__str__()
+    
+    def filter_moves(self, board, possible_spots):
+        return super().filter_moves(board, possible_spots)
+
+class King(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
         super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_King.png')
         self.value = 5
@@ -64,6 +74,18 @@ class King(Piece):
 
     def __str__(self):
         return 'King'
+
+    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
+        valid_spots = []
+        curr_pos = self.get_position()
+        possible_spots = super().filter_moves(board, possible_spots)
+        # removes spots not in palace
+        for delta in possible_spots:
+            pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
+            if self.is_in_palace(pos):
+                valid_spots.append(delta)
+        return valid_spots
+
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         possible_spots = [
@@ -77,25 +99,10 @@ class King(Piece):
             ( 1, 1), # bottom right
             ]
         
-        print(f'King clicked. At position{self.grid_pos}')
-        self.filter_moves(board, possible_spots)
-
+        possible_spots = self.filter_moves(board, possible_spots)
         print(possible_spots)
         return possible_spots
     
-    def filter_moves(self, board, possible_spots):
-        curr_pos = self.get_position()
-        possible_spots = super().filter_moves(board, possible_spots)
-        # removes spots not in palace
-        for delta in possible_spots:
-            pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
-            if not self.is_in_palace(pos):
-                possible_spots.remove(delta)
-        return possible_spots
-
-
-
-
 class Pawn(Piece):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Pawn.png')
@@ -116,7 +123,7 @@ class Pawn(Piece):
         print(possible_spots)
         return possible_spots
 
-class Advisor(Piece):
+class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Advisor.png')
         self.value = 3
@@ -137,24 +144,9 @@ class Advisor(Piece):
             ( 1, 1), # bottom right
             ]
         
-        print(f'Advisor clicked. At position{self.grid_pos}')
-        self.filter_moves(board, possible_spots)
+        possible_spots = self.filter_moves(board, possible_spots)
         print(possible_spots)
-        print(self.grid_pos, board.at((8,4)))
         return possible_spots
-    
-    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
-        curr_pos = self.get_position()
-        possible_spots = super().filter_moves(board, possible_spots)
-        # removes spots not in palace
-        for delta in possible_spots:
-            pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
-            if not self.is_in_palace(pos):
-                possible_spots.remove(delta)
-
-        return possible_spots
-
-
 
 class Elephant(Piece):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
@@ -180,7 +172,6 @@ class Horse(Piece):
     def get_possible_moves(self):
         print('Horse clicked')
 
-
 class Cannon(Piece):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Cannon.png')
@@ -192,7 +183,6 @@ class Cannon(Piece):
 
     def get_possible_moves(self):
         print('Cannon clicked')
-
 
 class Chariot(Piece):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
@@ -206,7 +196,6 @@ class Chariot(Piece):
 
     def get_possible_moves(self):
         print('Chariot clicked')
-
 
 if __name__ == '__main__':
     import pygame
