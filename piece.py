@@ -259,22 +259,30 @@ class Cannon(Piece):
                     print("this is the current piece")
                 elif curr_col < other_col:
                     print('other piece is to the right of current piece')
+                    # get everything past the other piece
+                    ls = board.grid[self.grid_pos[0]][other_col:]
+                    print(*ls)
+
                 else:
                     print('other piece is to the left of current piece')
+                    # get everything past the other piece
+                    ls = board.grid[self.grid_pos[0]][:other_col]
+                    print(*ls)
+
                     
         # get vertical slice of board that cannon is at
         # get position of all pieces in slice
-        for row in board.grid:
-            row = row[self.grid_pos[1]]
-            if row:
-                curr_row, other_row = self.grid_pos[0], row.grid_pos[0]
-                print(curr_row, other_row, end=': ')
-                if curr_row == other_row:
-                    print("this is the current piece")
-                elif curr_col < other_col:
-                    print('other piece is below current piece')
-                else:
-                    print('other piece is above current piece')
+        # for row in board.grid:
+        #     row = row[self.grid_pos[1]]
+        #     if row:
+        #         curr_row, other_row = self.grid_pos[0], row.grid_pos[0]
+        #         print(curr_row, other_row, end=': ')
+        #         if curr_row == other_row:
+        #             print("this is the current piece")
+        #         elif curr_row < other_row:
+        #             print('other piece is below current piece')
+        #         else:
+        #             print('other piece is above current piece')
         print()
 
 class Chariot(Piece):
