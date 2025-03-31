@@ -3,6 +3,7 @@ from button import *
 from board import Board
 
 PATH = 'assets/Pieces/' # path to piece images
+BOLD, BOLD_END = '\033[1m', '\033[0m'
 
 class Piece(TextureButton):
     def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
@@ -122,6 +123,9 @@ class King(Royalty):
     def __str__(self):
         return 'King'
 
+    def __repr__(self):
+        return 'king'
+
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         possible_spots = [
             (-1, 0), # up
@@ -146,6 +150,9 @@ class Advisor(Royalty):
 
     def __str__(self):
         return 'Advisor'
+
+    def __repr__(self):
+        return 'advisor'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         possible_spots = [
@@ -172,6 +179,9 @@ class Pawn(Piece):
     def __str__(self):
         return 'Pawn'
 
+    def __repr__(self):
+        return 'Pawn'
+
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         possible_spots = [
             (-1, 0), # up
@@ -192,6 +202,9 @@ class Elephant(Animal):
 
     def __str__(self):
         return 'Elephant'
+
+    def __repr__(self):
+        return 'elephant'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         possible_spots = [
@@ -219,6 +232,9 @@ class Horse(Animal):
     def __str__(self):
         return 'Horse'
 
+    def __repr__(self):
+        return 'horse'
+
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         possible_spots = [
             (-2,  1), # top right
@@ -245,45 +261,56 @@ class Cannon(Piece):
     def __str__(self):
         return 'Cannon'
 
+    def __repr__(self):
+        return 'Cannon'
+
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         print(f'Cannon clicked at pos {self.grid_pos}')
+        row_index = self.grid_pos[1]
+        col_index = self.grid_pos[0]
+        
+        # get row
+        ls = board.grid[col_index]
+        left_side, right_side = self._split_array(ls, row_index)
 
-        # get horizontal slice of board that cannon is at
-        # get position of all pieces in slice
-        # get position of all pieces 
-        for col in board.grid[self.grid_pos[0]]:
-            if col:
-                curr_col, other_col = self.grid_pos[1], col.grid_pos[1]
-                print(curr_col, other_col, end=': ')
-                if curr_col == other_col:
-                    print("this is the current piece")
-                elif curr_col < other_col:
-                    print('other piece is to the right of current piece')
-                    # get everything past the other piece
-                    ls = board.grid[self.grid_pos[0]][other_col:]
-                    print(*ls)
+        # get col
+        ls = [col[row_index] for col in board.grid]
+        top_side, botton_side = self._split_array(ls, col_index)
 
-                else:
-                    print('other piece is to the left of current piece')
-                    # get everything past the other piece
-                    ls = board.grid[self.grid_pos[0]][:other_col]
-                    print(*ls)
+        print(f'left: {left_side}, right: {right_side}')
+        print(f'top: {top_side}, bottom: {botton_side}')
 
-                    
-        # get vertical slice of board that cannon is at
-        # get position of all pieces in slice
-        # for row in board.grid:
-        #     row = row[self.grid_pos[1]]
-        #     if row:
-        #         curr_row, other_row = self.grid_pos[0], row.grid_pos[0]
-        #         print(curr_row, other_row, end=': ')
-        #         if curr_row == other_row:
-        #             print("this is the current piece")
-        #         elif curr_row < other_row:
-        #             print('other piece is below current piece')
-        #         else:
-        #             print('other piece is above current piece')
-        print()
+        # left & top lists reversed so it can get piece closest to current piece
+        lists_to_process = {
+            left_side[::-1] : 'left',
+            right_side : 'right',
+            top_side[::-1] : 'top',
+            botton_side : 'bottom'
+        }
+
+        for curr_list in lists_to_process:
+
+            first_piece = self._get_first_item_in(curr_list)
+            if first_piece:
+                starting_index = first_piece.grid_pos
+                print(f'piece closest to {self}: {first_piece}, {starting_index}')
+                _, new_list = self._split_array(curr_list, curr_list.index(first_piece))
+                print(new_list)
+
+    # splits list into two lists at the index specified.
+    # leaves out the specified index from list.
+    def _split_array(self, list:list, index) -> tuple[list]:
+        list1 = list[:index]
+        list2 = list[index+1:]
+        return (list1, list2)
+    
+    def _get_first_item_in(self, list:list):
+        for piece in list:
+            if piece:
+                return piece
+        return None
+        
+
 
 class Chariot(Piece):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
