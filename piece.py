@@ -6,12 +6,16 @@ PATH = 'assets/Pieces/' # path to piece images
 BOLD, BOLD_END = '\033[1m', '\033[0m'
 
 class Piece(TextureButton):
-    def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
+    def __init__(self, grid_pos, pos, size, team=None,
+                 image_file='assets/Pieces/Blank_Piece.png',
+                 international=False):
         super().__init__(pos, size, image_file)
         self.VALUE = 0           # the value the piece is worth
-        self.team = None         # team of the piece
+        self.team = team         # team of the piece
         self.location = grid_pos # where the piece is located on the board
         self.possible_moves = None
+        self.international = international
+        self.set_piece_image()
     def __str__(self):
         return 'Piece'
 
@@ -40,6 +44,13 @@ class Piece(TextureButton):
             if board.is_pos_avaliable(pos):
                 valid_spots.append(delta)
         return valid_spots
+
+    def set_piece_image(self) -> None:
+        file_name = ''
+        file_name += 'I_' if self.international else ''
+        file_name += 'Cho_' if self.team == 'cho' or 'Cho' else 'Han_'
+        file_name += str(self).capitalize() + '.png'
+        self.set_image(PATH+file_name)
 
 class Royalty(Piece):
     def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
@@ -113,6 +124,29 @@ class Animal(Piece):
             if not self._is_move_blocked(board, delta):
                 valid_moves.append(delta)
         return valid_moves
+
+class Artillery(Piece):
+    def get_adjacent_rows_and_cols(self, board:Board) -> dict[tuple, tuple[int,int]]:
+        row_index = self.grid_pos[1]
+        col_index = self.grid_pos[0]
+        
+        # get row and col of board that this piece is on
+        row = board.grid[col_index]
+        col = [col[row_index] for col in board.grid]
+
+        # get spots left, right, above and below this piece
+        left_side, right_side = split_array(row, row_index)
+        top_side, botton_side = split_array(col, col_index)
+
+        # left & top lists reversed so it can get piece closest to current piece
+        # tuples are the movement deltas for corresp. side
+        lists_to_process = {
+            tuple(left_side[::-1]) : (0, -1),
+            tuple(right_side)      : (0, 1),
+            tuple(top_side[::-1])  : (-1, 0),
+            tuple(botton_side)     : (1, 0)
+        }
+        return lists_to_process
 
 class King(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
@@ -252,7 +286,7 @@ class Horse(Animal):
         print(f'possbile moves for this piece: {possible_spots}')
         return possible_spots
 
-class Cannon(Piece):
+class Cannon(Artillery):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Cannon.png')
         self.VALUE = 7
@@ -267,34 +301,16 @@ class Cannon(Piece):
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         print(f'Cannon clicked at pos {self.grid_pos}')
         possible_spots = []
-        row_index = self.grid_pos[1]
-        col_index = self.grid_pos[0]
-        
-        # get row and col of board that this piece is on
-        row = board.grid[col_index]
-        col = [col[row_index] for col in board.grid]
-
-        # get spots left, right, above and below this piece
-        left_side, right_side = self._split_array(row, row_index)
-        top_side, botton_side = self._split_array(col, col_index)
-
-        # left & top lists reversed so it can get piece closest to current piece
-        # tuples are the movement deltas for corresp. side
-        lists_to_process = {
-            tuple(left_side[::-1]) : (0, -1),
-            tuple(right_side)      : (0, 1),
-            tuple(top_side[::-1])  : (-1, 0),
-            tuple(botton_side)     : (1, 0)
-        }
+        lists_to_process = self.get_adjacent_rows_and_cols(board)
 
         for pieces, delta in lists_to_process.items():
             pieces = list(pieces)
-            closest_piece = self._get_first_item_in(pieces)
+            closest_piece = get_first_item_in(pieces)
 
             if closest_piece:
                 piece_pos = closest_piece.grid_pos
                 piece_index = pieces.index(closest_piece)
-                _, spots_past_piece = self._split_array(pieces, piece_index)
+                _, spots_past_piece = split_array(pieces, piece_index)
 
                 for spot in spots_past_piece:
                     if spot is None:
@@ -302,24 +318,9 @@ class Cannon(Piece):
                         possible_spots.append(piece_pos)
         
         print(possible_spots)
-                
-
-    # splits list into two lists at the index specified.
-    # leaves out the specified index from list.
-    def _split_array(self, list:list, index) -> tuple[list]:
-        list1 = list[:index]
-        list2 = list[index+1:]
-        return (list1, list2)
+        return possible_spots
     
-    def _get_first_item_in(self, list:list):
-        for piece in list:
-            if piece:
-                return piece
-        return None
-        
-
-
-class Chariot(Piece):
+class Chariot(Artillery):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
         # image_file = team.capitalize()
         super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Chariot.png')
@@ -329,8 +330,25 @@ class Chariot(Piece):
     def __str__(self):
         return 'Chariot'
 
-    def get_possible_moves(self):
-        print('Chariot clicked')
+    def __repr__(self):
+        return 'chariot'
+
+    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+        print('Chariot clicked at pos', self.grid_pos)
+        possible_spots = []
+        lists_to_process = self.get_adjacent_rows_and_cols(board)
+
+        for pieces, delta in lists_to_process.items():
+            pieces = list(pieces)
+            current_pos = self.grid_pos
+            for piece in pieces:
+                current_pos = add_tuples(current_pos, delta)
+                possible_spots.append(current_pos)
+                if piece:
+                    break                      
+
+        print(possible_spots)
+        return possible_spots
 
 def add_tuples(x:tuple, y:tuple) -> tuple:
     try:
@@ -338,6 +356,20 @@ def add_tuples(x:tuple, y:tuple) -> tuple:
     except TypeError:
         print('types are incompatible to add.')
         return None
+
+# splits list into two lists at the index specified.
+# leaves out the specified index from list.
+def split_array(list:list, index) -> tuple[list,list]:
+    list1 = list[:index]
+    list2 = list[index+1:]
+    return (list1, list2)
+
+def get_first_item_in(list:list):
+    for piece in list:
+        if piece:
+            return piece
+    return None
+
 
 if __name__ == '__main__':
     import pygame
