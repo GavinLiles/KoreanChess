@@ -48,7 +48,7 @@ class Board():
             Chariot: [(9, 0), (9, 8)],
             Elephant: [(9, 1), (9, 7)],
             Cannon: [(7, 1), (7, 7)],
-            Pawn: [(6, 0), (6, 2), (6, 4), (6, 6), (6, 8), (3, 1), (1, 1)],
+            Pawn: [(6, 0), (6, 2), (6, 4), (6, 6), (6, 8)],
         }
 
         for piece_class, positions in pieces.items():

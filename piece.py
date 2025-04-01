@@ -266,36 +266,43 @@ class Cannon(Piece):
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         print(f'Cannon clicked at pos {self.grid_pos}')
+        possible_spots = []
         row_index = self.grid_pos[1]
         col_index = self.grid_pos[0]
         
-        # get row
-        ls = board.grid[col_index]
-        left_side, right_side = self._split_array(ls, row_index)
+        # get row and col of board that this piece is on
+        row = board.grid[col_index]
+        col = [col[row_index] for col in board.grid]
 
-        # get col
-        ls = [col[row_index] for col in board.grid]
-        top_side, botton_side = self._split_array(ls, col_index)
-
-        print(f'left: {left_side}, right: {right_side}')
-        print(f'top: {top_side}, bottom: {botton_side}')
+        # get spots left, right, above and below this piece
+        left_side, right_side = self._split_array(row, row_index)
+        top_side, botton_side = self._split_array(col, col_index)
 
         # left & top lists reversed so it can get piece closest to current piece
+        # tuples are the movement deltas for corresp. side
         lists_to_process = {
-            left_side[::-1] : 'left',
-            right_side : 'right',
-            top_side[::-1] : 'top',
-            botton_side : 'bottom'
+            tuple(left_side[::-1]) : (0, -1),
+            tuple(right_side)      : (0, 1),
+            tuple(top_side[::-1])  : (-1, 0),
+            tuple(botton_side)     : (1, 0)
         }
 
-        for curr_list in lists_to_process:
+        for pieces, delta in lists_to_process.items():
+            pieces = list(pieces)
+            closest_piece = self._get_first_item_in(pieces)
 
-            first_piece = self._get_first_item_in(curr_list)
-            if first_piece:
-                starting_index = first_piece.grid_pos
-                print(f'piece closest to {self}: {first_piece}, {starting_index}')
-                _, new_list = self._split_array(curr_list, curr_list.index(first_piece))
-                print(new_list)
+            if closest_piece:
+                piece_pos = closest_piece.grid_pos
+                piece_index = pieces.index(closest_piece)
+                _, spots_past_piece = self._split_array(pieces, piece_index)
+
+                for spot in spots_past_piece:
+                    if spot is None:
+                        piece_pos = add_tuples(piece_pos, delta)
+                        possible_spots.append(piece_pos)
+        
+        print(possible_spots)
+                
 
     # splits list into two lists at the index specified.
     # leaves out the specified index from list.
@@ -324,6 +331,13 @@ class Chariot(Piece):
 
     def get_possible_moves(self):
         print('Chariot clicked')
+
+def add_tuples(x:tuple, y:tuple) -> tuple:
+    try:
+        return tuple(map(lambda i, j: i + j, x, y))
+    except TypeError:
+        print('types are incompatible to add.')
+        return None
 
 if __name__ == '__main__':
     import pygame
