@@ -3,19 +3,22 @@ from button import *
 from board import Board
 
 PATH = 'assets/Pieces/' # path to piece images
+DEAF_IMG = 'assets/Pieces/Blank_Piece.png'
 BOLD, BOLD_END = '\033[1m', '\033[0m'
 
 class Piece(TextureButton):
     def __init__(self, grid_pos, pos, size, team=None,
-                 image_file='assets/Pieces/Blank_Piece.png',
-                 international=False):
+                 image_file=DEAF_IMG,
+                 international=True):
         super().__init__(pos, size, image_file)
         self.VALUE = 0           # the value the piece is worth
         self.team = team         # team of the piece
         self.location = grid_pos # where the piece is located on the board
         self.possible_moves = None
         self.international = international
+        self.is_clicked = False
         self.set_piece_image()
+
     def __str__(self):
         return 'Piece'
 
@@ -33,7 +36,8 @@ class Piece(TextureButton):
         else:
             self.color = self.normal_color
         if self.is_clicked(event, mouse_pos):
-            self.func(board)
+            self.possible_moves = self.func(board)
+            print(self.possible_moves)
 
     def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
         curr_pos = self.get_position()
@@ -46,11 +50,22 @@ class Piece(TextureButton):
         return valid_spots
 
     def set_piece_image(self) -> None:
-        file_name = ''
-        file_name += 'I_' if self.international else ''
-        file_name += 'Cho_' if self.team == 'cho' or 'Cho' else 'Han_'
-        file_name += str(self).capitalize() + '.png'
-        self.set_image(PATH+file_name)
+        if self.team:
+            file_name = PATH
+            file_name += 'I_' if self.international else ''
+            file_name += 'Cho_' if self.team.capitalize() == 'Cho' else 'Han_'
+            file_name += str(self).capitalize() + '.png'
+            self.set_image(file_name)
+        else:
+            self.set_image(DEAF_IMG)
+
+    def render_possible_spots(self, board:Board, surface):
+        spots_as_pieces = []
+        for pos in self.possible_moves:
+            render_pos = board.calculate_render_pos(pos)
+            spots_as_pieces.append(Piece(pos, render_pos, board.piece_size))
+        for spot in spots_as_pieces:
+            spot.render(surface)
 
 class Royalty(Piece):
     def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
@@ -150,7 +165,7 @@ class Artillery(Piece):
 
 class King(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_King.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 5
         self.func = self.get_possible_moves
 
@@ -161,7 +176,8 @@ class King(Royalty):
         return 'king'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
-        possible_spots = [
+        possible_spots = []
+        possible_deltas = [
             (-1, 0), # up
             ( 1, 0), # down
             ( 0,-1), # left
@@ -172,13 +188,14 @@ class King(Royalty):
             ( 1, 1), # bottom right
             ]
         
-        possible_spots = self.filter_moves(board, possible_spots)
-        print(possible_spots)
+        possible_deltas = self.filter_moves(board, possible_deltas)
+        for delta in possible_deltas:
+            possible_spots.append(add_tuples(self.grid_pos, delta))
         return possible_spots
 
 class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Advisor.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 3
         self.func = self.get_possible_moves
 
@@ -189,7 +206,8 @@ class Advisor(Royalty):
         return 'advisor'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
-        possible_spots = [
+        possible_spots = []
+        possible_deltas = [
             (-1, 0), # up
             ( 1, 0), # down
             ( 0,-1), # left
@@ -200,13 +218,14 @@ class Advisor(Royalty):
             ( 1, 1), # bottom right
             ]
         
-        possible_spots = self.filter_moves(board, possible_spots)
-        print(possible_spots)
+        possible_deltas = self.filter_moves(board, possible_deltas)
+        for delta in possible_deltas:
+            possible_spots.append(add_tuples(self.grid_pos, delta))
         return possible_spots
 
 class Pawn(Piece):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Pawn.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 2
         self.func = self.get_possible_moves
 
@@ -217,19 +236,21 @@ class Pawn(Piece):
         return 'Pawn'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
-        possible_spots = [
+        possible_spots = []
+        possible_deltas = [
             (-1, 0), # up
             ( 0,-1), # left
             ( 0, 1), # right
             ]
 
-        self.filter_moves(board, possible_spots)
-        print(possible_spots)
+        possible_deltas = self.filter_moves(board, possible_deltas)
+        for delta in possible_deltas:
+            possible_spots.append(add_tuples(self.grid_pos, delta))
         return possible_spots
 
 class Elephant(Animal):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Elephant.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 3
         self.DIAGONAL_STEPS = 2
         self.func = self.get_possible_moves
@@ -258,7 +279,7 @@ class Elephant(Animal):
 
 class Horse(Animal):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Horse.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 5
         self.DIAGONAL_STEPS = 1
         self.func = self.get_possible_moves
@@ -288,7 +309,7 @@ class Horse(Animal):
 
 class Cannon(Artillery):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Cannon.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 7
         self.func = self.get_possible_moves
     
@@ -317,13 +338,12 @@ class Cannon(Artillery):
                         piece_pos = add_tuples(piece_pos, delta)
                         possible_spots.append(piece_pos)
         
-        print(possible_spots)
         return possible_spots
     
 class Chariot(Artillery):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
         # image_file = team.capitalize()
-        super().__init__(grid_pos, pos, size, image_file='assets/Pieces/I_Cho_Chariot.png')
+        super().__init__(grid_pos, pos, size, team)
         self.VALUE = 13
         self.func = self.get_possible_moves
     
@@ -347,7 +367,6 @@ class Chariot(Artillery):
                 if piece:
                     break                      
 
-        print(possible_spots)
         return possible_spots
 
 def add_tuples(x:tuple, y:tuple) -> tuple:
@@ -369,42 +388,3 @@ def get_first_item_in(list:list):
         if piece:
             return piece
     return None
-
-
-if __name__ == '__main__':
-    import pygame
-
-    pygame.init()
-    info = pygame.display.Info()
-    screen = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-    background = pygame.image.load('assets/Janggi_Board.png').convert()
-    run = True
-    def fun():
-        print("click")
-        
-    pieces = [ 
-        Chariot([50, 100], [50, 50], team='cho'),
-        Pawn([100, 100], [50, 50], team='cho'),
-        Cannon([150, 100], [50, 50], team='cho'),
-        Horse([200, 100], [50, 50], team='cho')
-    ]
-
-    while run:
-        background = pygame.transform.smoothscale(background, screen.get_size())
-        screen.blit(background, (0, 0))
-        mouse_pos = pygame.mouse.get_pos()
-
-        for piece in pieces:
-            piece.render(screen)
-
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                run = False
-            for piece in pieces:
-                piece.process(event, mouse_pos)
-
-        pygame.display.update()
-
-    # Quit Pygame
-    pygame.quit()

@@ -12,6 +12,7 @@ class Board():
         self.boarder = pygame.image.load('assets/Janggi_Board_Border.png').convert()
         self.grid = [ [None] * 9 for _ in range(10)] # array representation of board
         self.pieces = [] # NOTE: probably temp variable. will be replaced by player object
+        self.international = True
         self.__update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
         self.update_piece_size((75, 75))
@@ -27,9 +28,9 @@ class Board():
         except IndexError:
             return None
 
-    def __calculate_render_pos(self, grid_position:tuple[int]) -> tuple[float]:
-        x = grid_position[1]*self.__row_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[0]
-        y = grid_position[0]*self.__col_spacing-(self.__piece_offset[0]) + self.SCREEN_CENTER[1]
+    def calculate_render_pos(self, grid_position:tuple[int]) -> tuple[float]:
+        x = grid_position[1]*self.__row_spacing-(self.piece_offset[0]) + self.SCREEN_CENTER[0]
+        y = grid_position[0]*self.__col_spacing-(self.piece_offset[0]) + self.SCREEN_CENTER[1]
         return (x, y)
     
     def is_pos_avaliable(self, pos:tuple[int]) -> bool:
@@ -51,10 +52,30 @@ class Board():
             Pawn: [(6, 0), (6, 2), (6, 4), (6, 6), (6, 8)],
         }
 
+        enemy_pieces = {
+            King: [(1, 4)],
+            Advisor: [(0, 3), (0, 5)],
+            Horse: [(0, 2), (0, 6)],
+            Chariot: [(0, 0), (0, 8)],
+            Elephant: [(0, 1), (0, 7)],
+            Cannon: [(2, 1), (2, 7)],
+            Pawn: [(3, 0), (3, 2), (3, 4), (3, 6), (3, 8)],
+
+        }
+
         for piece_class, positions in pieces.items():
             for pos in positions:
-                render_pos = self.__calculate_render_pos(pos)
-                p = piece_class(pos, render_pos, self.__piece_size, team='cho')
+                render_pos = self.calculate_render_pos(pos)
+                p = piece_class(pos, render_pos, self.piece_size, team='Cho',
+                                international=self.international)
+                self.pieces.append(p)
+                self.insert_piece(pos, p)
+
+        for piece_class, positions in enemy_pieces.items():
+            for pos in positions:
+                render_pos = self.calculate_render_pos(pos)
+                p = piece_class(pos, render_pos, self.piece_size, team='Han',
+                                international=self.international)
                 self.pieces.append(p)
                 self.insert_piece(pos, p)
 
@@ -92,12 +113,12 @@ class Board():
         for i in range(10):
             for j in range(9):
                 if self.grid[i][j]:
-                    pos = self.__calculate_render_pos((i, j))
+                    pos = self.calculate_render_pos((i, j))
                     self.grid[i][j].set_position((i, j), pos)
 
     def update_piece_size(self, size:tuple[int]):
-        self.__piece_size = size
-        self.__piece_offset = tuple([i/2 for i in self.__piece_size]) # offset for piece rendering
+        self.piece_size = size
+        self.piece_offset = tuple([i/2 for i in self.piece_size]) # offset for piece rendering
 
     def __update_board_size(self):
         self.__board_size = self.background.get_size()
@@ -108,6 +129,8 @@ class Board():
         self.__render_board(surface)
         for piece in self.pieces:
             piece.render(surface)
+            if piece.possible_moves:
+                piece.render_possible_spots(self, surface)
 
     def __render_board(self, surface):
         board_pos = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
