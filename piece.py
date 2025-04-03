@@ -16,7 +16,7 @@ class Piece(TextureButton):
         self.location = grid_pos # where the piece is located on the board
         self.possible_moves = None
         self.international = international
-        self.is_clicked = False
+        self.selected = False    # a 'latch' to render possible moves when piece is clicked
         self.set_piece_image()
 
     def __str__(self):
@@ -37,9 +37,13 @@ class Piece(TextureButton):
             self.color = self.normal_color
         if self.is_clicked(event, mouse_pos):
             self.possible_moves = self.func(board)
+            self.selected = not self.selected
             print(self.possible_moves)
+        # if left click occured, but piece wasnt clicked
+        elif self.is_left_click(event):
+            self.selected = False
 
-    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
+    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int,int]]:
         curr_pos = self.get_position()
         valid_spots = []
         # iterate through list and see if it is valid position
@@ -86,6 +90,11 @@ class Royalty(Piece):
             (9, 5), # bottom right
             (7, 5), # top right
         ]
+
+        # opposing side's palace
+        OTHER_PALACE = [add_tuples(x, (-7, 0)) for x in PALACE_SPOTS]
+        PALACE_SPOTS.extend(OTHER_PALACE)
+
         if pos in PALACE_SPOTS:
             return True
         return False
@@ -95,7 +104,7 @@ class Royalty(Piece):
         possible_spots = super().filter_moves(board, possible_spots)
         # filter spots that are not in palace area
         for delta in possible_spots:
-            pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
+            pos = add_tuples(curr_pos, delta)
             if self.is_in_palace(pos):
                 valid_spots.append(delta)
         return valid_spots

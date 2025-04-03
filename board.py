@@ -129,7 +129,7 @@ class Board():
         self.__render_board(surface)
         for piece in self.pieces:
             piece.render(surface)
-            if piece.possible_moves:
+            if piece.possible_moves and piece.selected:
                 piece.render_possible_spots(self, surface)
 
     def __render_board(self, surface):
