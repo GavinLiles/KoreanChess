@@ -23,7 +23,7 @@ class Piece(TextureButton):
         return 'Piece'
 
     def set_position(self, grid_pos:tuple[int], pos:tuple[float]):
-        self.grid_pos = grid_pos
+        self.location = grid_pos
         self.pos = pos
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
 
@@ -31,7 +31,7 @@ class Piece(TextureButton):
         self.pos = render_pos
 
     def get_position(self) -> tuple[int]:
-        return self.grid_pos
+        return self.location
 
     def process(self, board, event, mouse_pos):
         if self.is_hovered(mouse_pos):
@@ -50,9 +50,10 @@ class Piece(TextureButton):
         if self.possible_moves:
             for candidate in self.possible_moves:
                 if candidate.is_clicked(event,mouse_pos):
+                    # get new render_pos, move piece on board, update piece's position
                     pos = candidate.location
-                    i, j = pos[0], pos[1]
                     render_pos = board.calculate_render_pos(pos)
+                    board.move_piece(self.location, candidate.location)
                     self.set_position(pos, render_pos)
                     self.possible_moves.clear()
 
@@ -147,7 +148,7 @@ class Animal(Piece):
         steps = self._get_move_steps(move, self.DIAGONAL_STEPS)
 
         for step_delta in steps:
-            pos = tuple(map(lambda i, j: i + j, self.grid_pos, step_delta))
+            pos = tuple(map(lambda i, j: i + j, self.location, step_delta))
             if not board.is_pos_avaliable(pos):
                 return True
         return False
@@ -163,8 +164,8 @@ class Animal(Piece):
 
 class Artillery(Piece):
     def get_adjacent_rows_and_cols(self, board:Board) -> dict[tuple, tuple[int,int]]:
-        row_index = self.grid_pos[1]
-        col_index = self.grid_pos[0]
+        row_index = self.location[1]
+        col_index = self.location[0]
         
         # get row and col of board that this piece is on
         row = board.grid[col_index]
@@ -223,7 +224,7 @@ class King(Royalty):
         
         possible_deltas = self.filter_moves(board, possible_deltas)
         for delta in possible_deltas:
-            possible_spots.append(add_tuples(self.grid_pos, delta))
+            possible_spots.append(add_tuples(self.location, delta))
         return possible_spots
 
 class Advisor(Royalty):
@@ -253,7 +254,7 @@ class Advisor(Royalty):
         
         possible_deltas = self.filter_moves(board, possible_deltas)
         for delta in possible_deltas:
-            possible_spots.append(add_tuples(self.grid_pos, delta))
+            possible_spots.append(add_tuples(self.location, delta))
         return possible_spots
 
 class Pawn(Piece):
@@ -278,7 +279,7 @@ class Pawn(Piece):
 
         possible_deltas = self.filter_moves(board, possible_deltas)
         for delta in possible_deltas:
-            possible_spots.append(add_tuples(self.grid_pos, delta))
+            possible_spots.append(add_tuples(self.location, delta))
         return possible_spots
 
 class Elephant(Animal):
@@ -306,7 +307,7 @@ class Elephant(Animal):
             ( 3,  2), # bottom right
         ]
         possible_spots = self.filter_moves(board, possible_spots)
-        print(f'Elephant clicked at {self.grid_pos}')
+        print(f'Elephant clicked at {self.location}')
         print(f'Possible moevs for this piece: {possible_spots}')
         return possible_spots
 
@@ -334,7 +335,7 @@ class Horse(Animal):
             ( 2,  1), # bottom right
             ( 2, -1), # bottom left
         ]
-        print(f'Horse clicked at position {self.grid_pos}.')
+        print(f'Horse clicked at position {self.location}.')
         possible_spots = self.filter_moves(board, possible_spots)
         
         print(f'possbile moves for this piece: {possible_spots}')
@@ -353,7 +354,7 @@ class Cannon(Artillery):
         return 'Cannon'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
-        print(f'Cannon clicked at pos {self.grid_pos}')
+        print(f'Cannon clicked at pos {self.location}')
         possible_spots = []
         lists_to_process = self.get_adjacent_rows_and_cols(board)
 
@@ -362,7 +363,7 @@ class Cannon(Artillery):
             closest_piece = get_first_item_in(pieces)
 
             if closest_piece:
-                piece_pos = closest_piece.grid_pos
+                piece_pos = closest_piece.location
                 piece_index = pieces.index(closest_piece)
                 _, spots_past_piece = split_array(pieces, piece_index)
 
@@ -387,14 +388,14 @@ class Chariot(Artillery):
         return 'chariot'
 
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
-        print('Chariot clicked at pos', self.grid_pos)
+        print('Chariot clicked at pos', self.location)
         possible_spots = []
         adj_rows_and_cols = self.get_adjacent_rows_and_cols(board)
 
         # iters through each list in adj_row_and_col
         for pieces, delta in adj_rows_and_cols.items():
             pieces = list(pieces)
-            current_pos = self.grid_pos
+            current_pos = self.location
 
             # add each empty pos into possible_spots, end loop
             # when piece is found.

@@ -21,7 +21,8 @@ class Board():
 
     def at(self, pos:tuple[int]):
         try:
-            pos = self.grid[pos[0]][pos[1]]
+            # pos = self.grid[pos[0]][pos[1]]
+            pos = self.grid[pos[1]][pos[0]]
             if pos:
                 return pos
             return None
@@ -96,11 +97,13 @@ class Board():
 
     def move_piece(self, old_pos:tuple[int,int], new_pos:tuple[int,int]):
         if self.at(old_pos) is None:
-            print('nothing is here')
+            print('nothing is in old position')
         if self.at(new_pos):
-            print('piece is aleady at this position')
+            print('piece is aleady at new position')
 
-        self.insert_piece(new_pos, self.grid[old_pos[0]][old_pos[1]])
+        piece = self.grid[old_pos[0]][old_pos[1]]
+        print(piece)
+        self.insert_piece(new_pos, piece)
         self.insert_piece(old_pos, None)
 
     def update(self, surface):
@@ -167,6 +170,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 run = False
                 print(b.background.get_size())
+                b.print_grid()
 
             elif event.type == pygame.VIDEORESIZE:
                 width, height = event.size
