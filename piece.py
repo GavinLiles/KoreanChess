@@ -27,6 +27,9 @@ class Piece(TextureButton):
         self.pos = pos
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
 
+    def set_render_pos(self, render_pos:tuple[float,float]):
+        self.pos = render_pos
+
     def get_position(self) -> tuple[int]:
         return self.grid_pos
 
@@ -35,13 +38,23 @@ class Piece(TextureButton):
             self.color = self.hover_color
         else:
             self.color = self.normal_color
+            
         if self.is_clicked(event, mouse_pos):
+            self.selected = True
             self.possible_moves = self.func(board)
-            self.selected = not self.selected
-            print(self.possible_moves)
-        # if left click occured, but piece wasnt clicked
-        elif self.is_left_click(event):
+            self.possible_moves = self.create_candidates(board)
+
+        if self.is_left_click(event) and not self.is_clicked(event, mouse_pos) and self.selected:
             self.selected = False
+
+        if self.possible_moves:
+            for candidate in self.possible_moves:
+                if candidate.is_clicked(event,mouse_pos):
+                    pos = candidate.location
+                    i, j = pos[0], pos[1]
+                    render_pos = board.calculate_render_pos(pos)
+                    self.set_position(pos, render_pos)
+                    self.possible_moves.clear()
 
     def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int,int]]:
         curr_pos = self.get_position()
@@ -63,13 +76,12 @@ class Piece(TextureButton):
         else:
             self.set_image(DEAF_IMG)
 
-    def render_possible_spots(self, board:Board, surface):
-        spots_as_pieces = []
+    def create_candidates(self, board:Board):
+        candidates = []
         for pos in self.possible_moves:
             render_pos = board.calculate_render_pos(pos)
-            spots_as_pieces.append(Piece(pos, render_pos, board.piece_size))
-        for spot in spots_as_pieces:
-            spot.render(surface)
+            candidates.append(Candidate(pos, render_pos, board.piece_size))
+        return candidates
 
 class Royalty(Piece):
     def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
@@ -171,6 +183,18 @@ class Artillery(Piece):
             tuple(botton_side)     : (1, 0)
         }
         return lists_to_process
+
+class Candidate(Piece):
+    def __init__(self, grid_pos, pos, size):
+        super().__init__(grid_pos, pos, size)
+        self.func = self.clicked
+
+    def __repr__(self):
+        return 'candidate'
+
+    def clicked(self):
+        print(self.location)
+        return self.location
 
 class King(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True):
@@ -365,16 +389,24 @@ class Chariot(Artillery):
     def get_possible_moves(self, board:Board) -> list[tuple[int]]:
         print('Chariot clicked at pos', self.grid_pos)
         possible_spots = []
-        lists_to_process = self.get_adjacent_rows_and_cols(board)
+        adj_rows_and_cols = self.get_adjacent_rows_and_cols(board)
 
-        for pieces, delta in lists_to_process.items():
+        # iters through each list in adj_row_and_col
+        for pieces, delta in adj_rows_and_cols.items():
             pieces = list(pieces)
             current_pos = self.grid_pos
+
+            # add each empty pos into possible_spots, end loop
+            # when piece is found.
             for piece in pieces:
                 current_pos = add_tuples(current_pos, delta)
                 possible_spots.append(current_pos)
-                if piece:
-                    break                      
+
+                if piece and piece.team == self.team:
+                    possible_spots.pop()
+                    break
+                elif piece:
+                    break
 
         return possible_spots
 

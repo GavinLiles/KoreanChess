@@ -94,10 +94,18 @@ class Board():
         except IndexError:
             print(f'given index {pos} is not within bounds.')
 
+    def move_piece(self, old_pos:tuple[int,int], new_pos:tuple[int,int]):
+        if self.at(old_pos) is None:
+            print('nothing is here')
+        if self.at(new_pos):
+            print('piece is aleady at this position')
+
+        self.insert_piece(new_pos, self.grid[old_pos[0]][old_pos[1]])
+        self.insert_piece(old_pos, None)
+
     def update(self, surface):
         self.__update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
-
         surface_size = surface.get_size()
         # if the window is not in ratio of the board,
         # set board's height off window,
@@ -107,9 +115,9 @@ class Board():
 
         self.boarder = pygame.transform.scale(self.boarder, surface_size)
         self.background = pygame.transform.scale(self.background, scale)
-        self.__update_piece_positions()
+        self.update_piece_positions()
 
-    def __update_piece_positions(self):
+    def update_piece_positions(self):
         for i in range(10):
             for j in range(9):
                 if self.grid[i][j]:
@@ -130,7 +138,8 @@ class Board():
         for piece in self.pieces:
             piece.render(surface)
             if piece.possible_moves and piece.selected:
-                piece.render_possible_spots(self, surface)
+                for candidate in piece.possible_moves:
+                    candidate.render(surface)
 
     def __render_board(self, surface):
         board_pos = [i-(j/2) for i, j in zip(surface.get_rect().center, self.__board_size)]
