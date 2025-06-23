@@ -1,48 +1,82 @@
 #libraries 
 import pygame
 import os
+from board import Board
+from button import TextButton
 
-from Mainmenu import MainMenu
+# takes in a board obj and mouse position
+# returns false when player closes window
+def game(b, mouse_pos, screen) -> bool:
+    b.render(screen)
 
-def main():
-    # use user's machine's screen size as reference to screen width/height
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
+    for event in pygame.event.get():
 
-    # initialize pygame instance
+        if event.type == pygame.QUIT:
+            print(b.background.get_size())
+            b.print_grid()
+            return False
+
+        elif event.type == pygame.VIDEORESIZE:
+            width, height = event.size
+            if width < WIDTH_LIMIT_MIN:
+                width = WIDTH_LIMIT_MIN
+            if height < HEIGHT_LIMIT_MAX:
+                height = HEIGHT_LIMIT_MAX
+            screen = pygame.display.set_mode((width, height), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
+            b.update(screen)
+
+        
+        for piece in b.pieces:
+            piece.process(b, event, mouse_pos)
+    
+    return True
+
+def main_menu(mouse_pos, screen, button) -> bool:
+    button.render(screen)
+
+    for event in pygame.event.get():
+
+        if event.type == pygame.QUIT:
+            print(b.background.get_size())
+            b.print_grid()
+            return False
+
+        button.process(event, mouse_pos)
+    return True
+
+        
+def add_tuples(x:tuple, y:tuple) -> tuple:
+    try:
+        return tuple(map(lambda i, j: i + j, x, y))
+    except TypeError:
+        print('types are incompatible to add.')
+        return None
+
+def divide_tuple(x:tuple, divisor) -> tuple:
+    try:
+        return (x[0]/divisor, x[1]/divisor)
+    except TypeError:
+        exit(0)
+
+if __name__ == '__main__':
+    import pygame
+
     pygame.init()
-
-    #Frame rate
-    clock = pygame.time.Clock()
-    fps = 60
-
-    # create logo for window
-    icon = pygame.image.load("assets/Pieces/Cho_King.png")
-    pygame.display.set_icon(icon)
-
-    #get screen information
     info = pygame.display.Info()
-    fullscreen_width, fullscreen_height = info.current_w, info.current_h
-
-
-    # Set up the display window and make is resizeable
-    screen = pygame.display.set_mode((fullscreen_width - 10, fullscreen_height - 50), pygame.RESIZABLE)  # width x height
-    pygame.display.set_caption("Korean Chess")
-
-    #start game loop
+    screen = pygame.display.set_mode((1000, 1000))#, pygame.RESIZABLE)
     run = True
-    while True:
-        # find matching event calls by player to pygame event calls
-        for event in pygame.event.get():
-			# if player closes window
-            if event.type == pygame.QUIT:
-				# halt execution
-                run = False
-        menu = MainMenu(screen)
-        menu.display()
-        clock.tick(fps)
+    WIDTH_LIMIT_MIN, HEIGHT_LIMIT_MAX = 800, 800
 
+    b = Board(screen)
+    b.update(screen)
+    button_pos = screen.get_size()
+    button = TextButton((0, 0), (100, 100), 'hello world!')
 
-        # Update the display
+    while run:
+        mouse_pos = pygame.mouse.get_pos()
+        # run = game(b, mouse_pos, screen)
+        run = main_menu(mouse_pos, screen, button)
         pygame.display.update()
 
-main()
+    # Quit Pygame
+    pygame.quit()

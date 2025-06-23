@@ -1,18 +1,18 @@
 # button.py
 # potential subclass: Piece 
 import pygame
+DEFAULT_IMAGE = 'assets/missing_image.png'
 
 class Button:
 
     def __init__(self, pos, size, func=None, color='white', hover_color='grey'):
-        # self.surface = surface
         self.hover_color = hover_color
         self.normal_color = color
         self.color = color
         self.pos = pos
         self.width, self.height = size
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
-        self.func = func
+        self.func = self._default_func if func is None else func # use deaf func if one not def
 
     def render(self, surface):
         pygame.draw.rect(surface, self.color, self.rect)
@@ -40,6 +40,10 @@ class Button:
         if self.is_clicked(event, mouse_pos):
             self.func()
 
+    def _default_func(self):
+        print('default button function')
+
+
 
 class TextButton(Button):
     
@@ -63,10 +67,10 @@ class TextureButton(Button):
     def set_image(self, image_file):
         try:
             self.image = pygame.image.load(image_file).convert_alpha()
-            self.image = pygame.transform.scale(self.image, (self.width, self.height))
         except OSError:
-            print(f'file {image_file} not found. Exiting')
-            exit(0)
+            print(f'file {image_file} not found. using a default image')
+            self.image = pygame.image.load(image_file).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
             
     def render(self, surface):
         surface.blit(self.image, self.pos)

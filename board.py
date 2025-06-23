@@ -8,8 +8,8 @@ RATIO = 880 / 982
 class Board():
 
     def __init__(self, surface):
-        self.background = pygame.image.load('assets/Janggi_Board.png').convert()
-        self.boarder = pygame.image.load('assets/Janggi_Board_Border.png').convert()
+        self.background = pygame.image.load('assets/boards/JanggiWoodDark.svg').convert()
+        self.boarder = pygame.image.load('assets/boards/Janggi_Board_Border.png').convert()
         self.grid = [ [None] * 9 for _ in range(10)] # array representation of board
         self.pieces = [] # NOTE: probably temp variable. will be replaced by player object
         self.international = True

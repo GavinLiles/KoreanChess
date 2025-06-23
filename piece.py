@@ -1,6 +1,6 @@
 # piece.py
 from button import *
-from board import Board
+# from board import Board
 
 PATH = 'assets/Pieces/' # path to piece images
 DEAF_IMG = 'assets/Pieces/Blank_Piece.png'
@@ -57,7 +57,7 @@ class Piece(TextureButton):
                     self.set_position(pos, render_pos)
                     self.possible_moves.clear()
 
-    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int,int]]:
+    def filter_moves(self, board, possible_spots:list[tuple[int]]) -> list[tuple[int,int]]:
         curr_pos = self.get_position()
         valid_spots = []
         # iterate through list and see if it is valid position
@@ -77,7 +77,7 @@ class Piece(TextureButton):
         else:
             self.set_image(DEAF_IMG)
 
-    def create_candidates(self, board:Board):
+    def create_candidates(self, board):
         candidates = []
         for pos in self.possible_moves:
             render_pos = board.calculate_render_pos(pos)
@@ -112,7 +112,7 @@ class Royalty(Piece):
             return True
         return False
     
-    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
+    def filter_moves(self, board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
         valid_spots, curr_pos = [], self.get_position()
         possible_spots = super().filter_moves(board, possible_spots)
         # filter spots that are not in palace area
@@ -144,7 +144,7 @@ class Animal(Piece):
             steps.append(tuple([x+(y*(i+1)) for x,y in zip(first_step, delta)]))
         return steps
 
-    def _is_move_blocked(self, board:Board, move:tuple[int]) -> bool:
+    def _is_move_blocked(self, board, move:tuple[int]) -> bool:
         steps = self._get_move_steps(move, self.DIAGONAL_STEPS)
 
         for step_delta in steps:
@@ -153,7 +153,7 @@ class Animal(Piece):
                 return True
         return False
 
-    def filter_moves(self, board:Board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
+    def filter_moves(self, board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
         possible_spots = super().filter_moves(board, possible_spots)
         valid_moves = []
 
@@ -163,7 +163,7 @@ class Animal(Piece):
         return valid_moves
 
 class Artillery(Piece):
-    def get_adjacent_rows_and_cols(self, board:Board) -> dict[tuple, tuple[int,int]]:
+    def get_adjacent_rows_and_cols(self, board) -> dict[tuple, tuple[int,int]]:
         row_index = self.location[1]
         col_index = self.location[0]
         
@@ -209,7 +209,7 @@ class King(Royalty):
     def __repr__(self):
         return 'king'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         possible_spots = []
         possible_deltas = [
             (-1, 0), # up
@@ -239,7 +239,7 @@ class Advisor(Royalty):
     def __repr__(self):
         return 'advisor'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         possible_spots = []
         possible_deltas = [
             (-1, 0), # up
@@ -269,7 +269,7 @@ class Pawn(Piece):
     def __repr__(self):
         return 'Pawn'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         possible_spots = []
         possible_deltas = [
             (-1, 0), # up
@@ -295,7 +295,7 @@ class Elephant(Animal):
     def __repr__(self):
         return 'elephant'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         possible_spots = [
             (-3, -2), # top left
             (-3,  2), # top right
@@ -324,7 +324,7 @@ class Horse(Animal):
     def __repr__(self):
         return 'horse'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         possible_spots = [
             (-2,  1), # top right
             (-2, -1), # top left
@@ -353,7 +353,7 @@ class Cannon(Artillery):
     def __repr__(self):
         return 'Cannon'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         print(f'Cannon clicked at pos {self.location}')
         possible_spots = []
         lists_to_process = self.get_adjacent_rows_and_cols(board)
@@ -387,7 +387,7 @@ class Chariot(Artillery):
     def __repr__(self):
         return 'chariot'
 
-    def get_possible_moves(self, board:Board) -> list[tuple[int]]:
+    def get_possible_moves(self, board) -> list[tuple[int]]:
         print('Chariot clicked at pos', self.location)
         possible_spots = []
         adj_rows_and_cols = self.get_adjacent_rows_and_cols(board)
