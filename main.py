@@ -1,19 +1,102 @@
-#libraries 
 import pygame
 import os
 from board import Board
 from button import TextButton
 
-# takes in a board obj and mouse position
-# returns false when player closes window
-def game(b, mouse_pos, screen) -> bool:
-    b.render(screen)
+class State:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((1000, 1000))#, pygame.RESIZABLE)
+        self.run = False
 
-    for event in pygame.event.get():
+    def set_active(self):
+        self.run = True
+
+    def set_inactive(self):
+        self.run = False
+
+    def is_active(self):
+        return self.run
+
+    def activate_state(self, state):
+        state.set_active()
+
+class MainMenu(State):
+    def __init__(self):
+        super().__init__() # call parent init
+        self.play = TextButton((100, 100), (100, 100), 'play', func=self._goto_game)
+        self.settings = TextButton((100, 210), (100, 100), 'settings', func=self._goto_settings)
+        self.exit = TextButton((100, 320), (100, 100), 'exit', func=self._exit_game)
+        self.settings_state = Settings()
+        self.game = Game()
+
+    def _exit_game(self):
+        self.set_inactive()
+
+    def _goto_settings(self):
+        self.activate_state(self.settings_state)
+
+    def _goto_game(self):
+        self.activate_state(self.game)
+
+    def process(self):
+        WIND_SIZE = pygame.display.get_window_size()
+        mouse_pos = pygame.mouse.get_pos()
+        pygame.display.update()
+        
+        if not (self.settings_state.is_active() or self.game.is_active()):
+            pygame.draw.rect(self.screen, (255,255,0), (0, 0, WIND_SIZE[0], WIND_SIZE[1]))
+            self.play.render(self.screen)
+            self.settings.render(self.screen)
+            self.exit.render(self.screen)
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                self.run = False
+
+            if self.settings_state.is_active():
+                self.settings_state.process(event, mouse_pos)
+            elif self.game.is_active():
+                self.game.process(event, mouse_pos)
+            else:
+                self.play.process(event, mouse_pos)
+                self.settings.process(event, mouse_pos)
+                self.exit.process(event, mouse_pos)
+
+class Settings(State):
+    def __init__(self):
+        super().__init__()
+        self.return_button = TextButton((100, 100), (100, 100), 'return', func=self._return_to_main)
+
+    def _return_to_main(self):
+        self.set_inactive()
+
+    def process(self, event, mouse_pos):
+        WIND_SIZE = pygame.display.get_window_size()
+        pygame.draw.rect(self.screen, (255,0,0), (0, 0, WIND_SIZE[0], WIND_SIZE[1]))
+        self.return_button.render(self.screen)
 
         if event.type == pygame.QUIT:
-            print(b.background.get_size())
-            b.print_grid()
+            print(self.b.background.get_size())
+            self.b.print_grid()
+            return False
+
+        self.return_button.process(event, mouse_pos)
+
+class Game(State):
+    def __init__(self):
+        super().__init__()
+        self.b = Board(self.screen)
+        self.b.render(self.screen)
+
+    def process(self, event, mouse_pos):
+        mouse_pos = pygame.mouse.get_pos()
+        self.b.render(self.screen)
+
+        if event.type == pygame.QUIT:
+            print(self.b.background.get_size())
+            self.b.print_grid()
             return False
 
         elif event.type == pygame.VIDEORESIZE:
@@ -22,61 +105,23 @@ def game(b, mouse_pos, screen) -> bool:
                 width = WIDTH_LIMIT_MIN
             if height < HEIGHT_LIMIT_MAX:
                 height = HEIGHT_LIMIT_MAX
-            screen = pygame.display.set_mode((width, height), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
-            b.update(screen)
+            screen = pygame.display.set_mode((width, height),pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
+            self.b.update(self.screen)
 
         
-        for piece in b.pieces:
-            piece.process(b, event, mouse_pos)
-    
-    return True
+        for piece in self.b.pieces:
+            piece.process(self.b, event, mouse_pos)
 
-def main_menu(mouse_pos, screen, button) -> bool:
-    button.render(screen)
-
-    for event in pygame.event.get():
-
-        if event.type == pygame.QUIT:
-            print(b.background.get_size())
-            b.print_grid()
-            return False
-
-        button.process(event, mouse_pos)
-    return True
-
-        
-def add_tuples(x:tuple, y:tuple) -> tuple:
-    try:
-        return tuple(map(lambda i, j: i + j, x, y))
-    except TypeError:
-        print('types are incompatible to add.')
-        return None
-
-def divide_tuple(x:tuple, divisor) -> tuple:
-    try:
-        return (x[0]/divisor, x[1]/divisor)
-    except TypeError:
-        exit(0)
 
 if __name__ == '__main__':
-    import pygame
-
-    pygame.init()
-    info = pygame.display.Info()
-    screen = pygame.display.set_mode((1000, 1000))#, pygame.RESIZABLE)
     run = True
-    WIDTH_LIMIT_MIN, HEIGHT_LIMIT_MAX = 800, 800
-
-    b = Board(screen)
-    b.update(screen)
-    button_pos = screen.get_size()
-    button = TextButton((0, 0), (100, 100), 'hello world!')
+    main_menu = MainMenu()
+    main_menu.set_active()
 
     while run:
-        mouse_pos = pygame.mouse.get_pos()
-        # run = game(b, mouse_pos, screen)
-        run = main_menu(mouse_pos, screen, button)
-        pygame.display.update()
+        if main_menu.is_active():
+            main_menu.process()
+        else:
+            run = False
 
-    # Quit Pygame
     pygame.quit()
