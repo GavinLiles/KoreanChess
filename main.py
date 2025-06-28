@@ -24,11 +24,19 @@ class State:
 class MainMenu(State):
     def __init__(self):
         super().__init__() # call parent init
-        self.play = TextButton((100, 100), (100, 100), 'play', func=self._goto_game)
-        self.settings = TextButton((100, 210), (100, 100), 'settings', func=self._goto_settings)
-        self.exit = TextButton((100, 320), (100, 100), 'exit', func=self._exit_game)
-        self.settings_state = Settings()
-        self.game = Game()
+        size = pygame.display.get_surface().get_size() # size of screen
+        self.settings_state, self.game = Settings(), Game() # init other states
+        self.buttons = []
+        button_size = (150, 100)
+        x = (size[0]/2)-(button_size[0]/2) # x position of button
+        button_traits = {'play':self._goto_game, 'settings':self._goto_settings, 'exit':self._exit_game}
+        i = 1 # iter for y position of button
+        
+        # create buttons
+        for label, function in button_traits.items():
+            y = 100*i + 10*i
+            self.buttons.append(TextButton((x, y), button_size, label, func=function))
+            i += 1
 
     def _exit_game(self):
         self.set_inactive()
@@ -44,30 +52,35 @@ class MainMenu(State):
         mouse_pos = pygame.mouse.get_pos()
         pygame.display.update()
         
+        # render buttons
+        # render menu when MainMenu is only active
         if not (self.settings_state.is_active() or self.game.is_active()):
             pygame.draw.rect(self.screen, (255,255,0), (0, 0, WIND_SIZE[0], WIND_SIZE[1]))
-            self.play.render(self.screen)
-            self.settings.render(self.screen)
-            self.exit.render(self.screen)
+            for button in self.buttons:
+                button.render(self.screen)
 
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
                 self.run = False
 
+            # process buttons
             if self.settings_state.is_active():
                 self.settings_state.process(event, mouse_pos)
             elif self.game.is_active():
                 self.game.process(event, mouse_pos)
             else:
-                self.play.process(event, mouse_pos)
-                self.settings.process(event, mouse_pos)
-                self.exit.process(event, mouse_pos)
+                for button in self.buttons:
+                    button.process(event, mouse_pos)
+
 
 class Settings(State):
     def __init__(self):
         super().__init__()
-        self.return_button = TextButton((100, 100), (100, 100), 'return', func=self._return_to_main)
+        size = pygame.display.get_surface().get_size() # size of screen
+        button_size = (150, 100)
+        x = (size[0]/2)-(button_size[0]/2)
+        self.return_button = TextButton((x, 100), button_size, 'return', func=self._return_to_main)
 
     def _return_to_main(self):
         self.set_inactive()
