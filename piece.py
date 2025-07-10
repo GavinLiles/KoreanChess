@@ -44,6 +44,7 @@ class Piece(TextureButton):
             self.possible_moves = self.func(board)
             self.possible_moves = self.create_candidates(board)
 
+        # if there was a left click, but the piece itself is not clicked, unselect it 
         if self.is_left_click(event) and not self.is_clicked(event, mouse_pos) and self.selected:
             self.selected = False
 

@@ -19,6 +19,9 @@ class Board():
         self.init_pieces()
         self.update(surface)
 
+    def __str__(self):
+        return 'Board'
+
     def at(self, pos:tuple[int]):
         try:
             # pos = self.grid[pos[0]][pos[1]]
@@ -79,9 +82,6 @@ class Board():
                                 international=self.international)
                 self.pieces.append(p)
                 self.insert_piece(pos, p)
-
-    def __str__(self):
-        return 'Board'
 
     def print_grid(self):
         for row in self.grid:
