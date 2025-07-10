@@ -138,6 +138,7 @@ class Board():
 
     def render(self, surface):
         self.__render_board(surface)
+        # render pieces
         for piece in self.pieces:
             piece.render(surface)
             if piece.possible_moves and piece.selected:
@@ -153,10 +154,8 @@ if __name__ == '__main__':
     import pygame
 
     pygame.init()
-    info = pygame.display.Info()
-    screen = pygame.display.set_mode((1000, 1000)) # pygame.RESIZABLE)
+    screen = pygame.display.set_mode((1000, 1000))
     run = True
-    WIDTH_LIMIT_MIN, HEIGHT_LIMIT_MAX = 800, 800
 
     b = Board(screen)
     b.update(screen)
@@ -172,16 +171,6 @@ if __name__ == '__main__':
                 print(b.background.get_size())
                 b.print_grid()
 
-            elif event.type == pygame.VIDEORESIZE:
-                width, height = event.size
-                if width < WIDTH_LIMIT_MIN:
-                    width = WIDTH_LIMIT_MIN
-                if height < HEIGHT_LIMIT_MAX:
-                    height = HEIGHT_LIMIT_MAX
-                screen = pygame.display.set_mode((width, height), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
-                b.update(screen)
-
-            
             for piece in b.pieces:
                 piece.process(b, event, mouse_pos)
 

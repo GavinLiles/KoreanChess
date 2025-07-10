@@ -6,7 +6,10 @@ from button import TextButton
 class State:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1000, 1000))#, pygame.RESIZABLE)
+        pygame.font.init()
+        self.DEFAULT_FONT = pygame.font.SysFont('Arial', 50)
+        self.screen = pygame.display.set_mode((1000, 1000))
+        self.screen_size = pygame.display.get_surface().get_size() # size of screen
         self.run = False
 
     def set_active(self):
@@ -24,40 +27,36 @@ class State:
 class MainMenu(State):
     def __init__(self):
         super().__init__() # call parent init
-        size = pygame.display.get_surface().get_size() # size of screen
-        self.settings_state, self.game = Settings(), Game() # init other states
+        self.settings_state = Settings() # init other states
+        self.game = Game()
         self.buttons = []
-        button_size = (150, 100)
-        x = (size[0]/2)-(button_size[0]/2) # x position of button
-        button_traits = {'play':self._goto_game, 'settings':self._goto_settings, 'exit':self._exit_game}
-        i = 1 # iter for y position of button
+        self.title = self.DEFAULT_FONT.render('Korean Chess', False, (0,0,0))
         
-        # create buttons
+        button_size = (150, 100)
+        x = (self.screen_size[0]/2)-(button_size[0]/2) # x position of button
+        button_traits = {
+            'play':self._goto_game,
+            'settings':self._goto_settings,
+            'exit':self._exit_game,
+            'goo':self._exit_game
+            }
+        
+        # create buttons from dict, add to list
+        button_spacing = 110
+        y_pos_factor = 1
+        y_offset = 100
         for label, function in button_traits.items():
-            y = 100*i + 10*i
+            y = y_offset + button_spacing * y_pos_factor
             self.buttons.append(TextButton((x, y), button_size, label, func=function))
-            i += 1
-
-    def _exit_game(self):
-        self.set_inactive()
-
-    def _goto_settings(self):
-        self.activate_state(self.settings_state)
-
-    def _goto_game(self):
-        self.activate_state(self.game)
+            y_pos_factor += 1
 
     def process(self):
-        WIND_SIZE = pygame.display.get_window_size()
         mouse_pos = pygame.mouse.get_pos()
         pygame.display.update()
         
-        # render buttons
         # render menu when MainMenu is only active
         if not (self.settings_state.is_active() or self.game.is_active()):
-            pygame.draw.rect(self.screen, (255,255,0), (0, 0, WIND_SIZE[0], WIND_SIZE[1]))
-            for button in self.buttons:
-                button.render(self.screen)
+            self.render()
 
         for event in pygame.event.get():
 
@@ -73,21 +72,36 @@ class MainMenu(State):
                 for button in self.buttons:
                     button.process(event, mouse_pos)
 
+    def render(self):
+        pygame.draw.rect(self.screen, (255,255,0), (0, 0, self.screen_size[0], self.screen_size[1]))
+        for button in self.buttons:
+            button.render(self.screen)
+
+        # render title
+        title_size = self.DEFAULT_FONT.size('Korean Chess')
+        self.screen.blit(self.title, (self.screen_size[0]/2-(title_size[0]/2), 100))
+
+    def _exit_game(self):
+        self.set_inactive()
+
+    def _goto_settings(self):
+        self.activate_state(self.settings_state)
+
+    def _goto_game(self):
+        self.activate_state(self.game)
 
 class Settings(State):
     def __init__(self):
         super().__init__()
-        size = pygame.display.get_surface().get_size() # size of screen
         button_size = (150, 100)
-        x = (size[0]/2)-(button_size[0]/2)
+        x = (self.screen_size[0]/2)-(button_size[0]/2)
         self.return_button = TextButton((x, 100), button_size, 'return', func=self._return_to_main)
 
     def _return_to_main(self):
         self.set_inactive()
 
     def process(self, event, mouse_pos):
-        WIND_SIZE = pygame.display.get_window_size()
-        pygame.draw.rect(self.screen, (255,0,0), (0, 0, WIND_SIZE[0], WIND_SIZE[1]))
+        pygame.draw.rect(self.screen, (255,0,0), (0, 0, self.screen_size[0], self.screen_size[1]))
         self.return_button.render(self.screen)
 
         if event.type == pygame.QUIT:
@@ -97,11 +111,14 @@ class Settings(State):
 
         self.return_button.process(event, mouse_pos)
 
+    def render(self):
+        pass
+
 class Game(State):
     def __init__(self):
         super().__init__()
         self.b = Board(self.screen)
-        self.b.render(self.screen)
+        self.b.update(self.screen)
 
     def process(self, event, mouse_pos):
         mouse_pos = pygame.mouse.get_pos()
@@ -111,16 +128,6 @@ class Game(State):
             print(self.b.background.get_size())
             self.b.print_grid()
             return False
-
-        elif event.type == pygame.VIDEORESIZE:
-            width, height = event.size
-            if width < WIDTH_LIMIT_MIN:
-                width = WIDTH_LIMIT_MIN
-            if height < HEIGHT_LIMIT_MAX:
-                height = HEIGHT_LIMIT_MAX
-            screen = pygame.display.set_mode((width, height),pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
-            self.b.update(self.screen)
-
         
         for piece in self.b.pieces:
             piece.process(self.b, event, mouse_pos)
