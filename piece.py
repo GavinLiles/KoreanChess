@@ -1,6 +1,5 @@
 # piece.py
 from button import *
-# from board import Board
 
 PATH = 'assets/Pieces/' # path to piece images
 DEAF_IMG = 'assets/Pieces/Blank_Piece.png'
@@ -44,9 +43,6 @@ class Piece(TextureButton):
             self.possible_moves = self.func(board)
             self.possible_moves = self.create_candidates(board)
 
-        # if there was a left click, but the piece itself is not clicked, unselect it 
-        if self.is_left_click(event) and not self.is_clicked(event, mouse_pos) and self.selected:
-            self.selected = False
 
         if self.possible_moves:
             for candidate in self.possible_moves:
@@ -58,12 +54,18 @@ class Piece(TextureButton):
                     self.set_position(pos, render_pos)
                     self.possible_moves.clear()
 
+        # if there was a left click, but the piece itself is not clicked, unselect it
+        # must clear possible_moves so when you unselect it, you cant click on those spots
+        if self.is_left_click(event) and not self.is_clicked(event, mouse_pos) and self.selected:
+            self.selected = False
+            self.possible_moves.clear()
+
     def filter_moves(self, board, possible_spots:list[tuple[int]]) -> list[tuple[int,int]]:
         curr_pos = self.get_position()
         valid_spots = []
-        # iterate through list and see if it is valid position
         for delta in possible_spots:
             pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
+            print(f'{board.at(pos)} at {pos}')
             if board.is_pos_avaliable(pos):
                 valid_spots.append(delta)
         return valid_spots
