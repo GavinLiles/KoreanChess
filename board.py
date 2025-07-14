@@ -39,7 +39,6 @@ class Board():
         for piece in self.cho_player.pieces:
             piece.process(self, event, mouse_pos)
 
-
     def at(self, pos:tuple[int]):
         try:
             # pos = self.grid[pos[0]][pos[1]]
@@ -130,8 +129,6 @@ class Board():
 
 if __name__ == '__main__':
     import pygame
-    import os
-    os.system('')
 
     pygame.init()
     screen = pygame.display.set_mode((1000, 1000))
