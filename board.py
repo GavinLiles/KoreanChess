@@ -129,31 +129,3 @@ class Board():
         board_pos = [i-(j/2) for i, j in zip(surface.get_rect().center, self._board_size)]
         surface.blit(self.boarder, (0, 0))
         surface.blit(self.background, board_pos)
-
-if __name__ == '__main__':
-    import pygame
-
-    pygame.init()
-    screen = pygame.display.set_mode((1000, 1000))
-    run = True
-
-    b = Board(screen)
-    b.update(screen)
-
-    while run:
-        mouse_pos = pygame.mouse.get_pos()
-        b.render(screen)
-
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                run = False
-                print(b.background.get_size())
-                print(b)
-
-            b.process(event, mouse_pos)
-
-        pygame.display.update()
-
-    # Quit Pygame
-    pygame.quit()
