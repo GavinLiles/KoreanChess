@@ -1,12 +1,12 @@
 import pygame
-from button import TextButton
 from state import State
+from button import TextButton
 
-class MainMenu(State):
+class GameOver(State):
     def __init__(self, manager):
-        super().__init__(manager) # call parent init
+        super().__init__(manager)
         self.buttons = []
-        self.title = self.DEFAULT_FONT.render('Korean Chess', False, (0,0,0))
+        self.title = self.DEFAULT_FONT.render('Game Over', False, (0,0,0))
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
         
         button_size = (150, 70)
@@ -14,9 +14,7 @@ class MainMenu(State):
 
         button_traits = {
             'play': lambda: self.manager.change_state('game'),
-            'settings': lambda: self.manager.change_state('settings'),
             'exit': lambda: exit(),  # or pygame.quit()
-            'game_over': lambda: self.manager.change_state('game_over'),
         }
         
         # create buttons from dict, add to list
@@ -37,11 +35,5 @@ class MainMenu(State):
             button.render(self.screen)
 
         # render title
-        title_size = self.DEFAULT_FONT.size('Korean Chess')
+        title_size = self.DEFAULT_FONT.size('Game Over')
         self.screen.blit(self.title, (self.screen_size[0]/2-(title_size[0]/2), 100))
-
-    def set_state_manager(self, manager):
-        self.manager = manager
-
-def dummy():
-    print('dummy')

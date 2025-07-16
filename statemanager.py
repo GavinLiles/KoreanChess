@@ -1,14 +1,16 @@
 from mainmenu import MainMenu
 from settings import Settings
 from game import Game
+from game_over import GameOver
 
 class StateManager:
     def __init__(self):
         self.current_state = None
         self.states = {
             'main_menu':MainMenu(self),
-            'settings':Settings(),
-            'game':Game(),
+            'game':Game(self),
+            'settings':Settings(self),
+            'game_over':GameOver(self),
         }
         self.current_state = self.states['main_menu']
         self.current_state.set_active()
@@ -33,6 +35,7 @@ if __name__ == '__main__':
     run = True
 
     manager = StateManager()
+    # manager.change_state('settings')
 
     while run:
         mouse_pos = pygame.mouse.get_pos()

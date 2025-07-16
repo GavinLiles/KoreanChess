@@ -49,6 +49,9 @@ class Board():
         except IndexError:
             return None
 
+    def change_board(self, image):
+        self.background = pygame.image.load(image).convert()
+
     def calculate_render_pos(self, grid_position:tuple[int]) -> tuple[float]:
         x = grid_position[1]*self.row_spacing-(self.piece_offset[0]) + self.SCREEN_CENTER[0]
         y = grid_position[0]*self.col_spacing-(self.piece_offset[0]) + self.SCREEN_CENTER[1]

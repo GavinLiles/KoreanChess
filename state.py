@@ -9,6 +9,7 @@ class State:
         self.screen = pygame.display.set_mode((1000, 1000))
         self.screen_size = pygame.display.get_surface().get_size() # size of screen
         self.run = False
+        print(f'{type(self)} initialized!!')
 
     def set_active(self):
         self.run = True
