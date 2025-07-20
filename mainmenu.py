@@ -16,8 +16,7 @@ class MainMenu(State):
             'play': lambda: self.manager.change_state('pregame_swap'),
             'settings': lambda: self.manager.change_state('settings'),
             'exit': lambda: exit(),  # or pygame.quit()
-            # 'game_over': lambda: self.manager.change_state('game_over'),
-            # 'swap': lambda: self.manager.change_state('pregame_swap')
+            'test': lambda: self.manager.change_state('test'),
         }
         
         # create buttons from dict, add to list

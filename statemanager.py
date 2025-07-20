@@ -1,8 +1,8 @@
 from mainmenu import MainMenu
 from settings import Settings
 from game import Game
-from game_over import GameOver
 from pregame_swap import PregameSwap
+from test import Test
 
 class StateManager:
     def __init__(self):
@@ -11,11 +11,10 @@ class StateManager:
             'main_menu':MainMenu(self),
             'game':Game(self),
             'settings':Settings(self),
-            'game_over':GameOver(self),
+            'test':Test(self),
             'pregame_swap':PregameSwap(self)
         }
         self.current_state = self.states['main_menu']
-        self.current_state.set_active()
 
     def process(self, event, mouse_pos):
         self.current_state.process(event, mouse_pos)

@@ -1,5 +1,6 @@
 # piece.py
 from button import *
+from misc_functions import *
 
 PATH = 'assets/Pieces/' # path to piece images
 DEAF_IMG = 'assets/Pieces/Blank_Piece.png'
@@ -414,22 +415,3 @@ class Chariot(Artillery):
 
         return possible_spots
 
-def add_tuples(x:tuple, y:tuple) -> tuple:
-    try:
-        return tuple(map(lambda i, j: i + j, x, y))
-    except TypeError:
-        print('types are incompatible to add.')
-        return None
-
-# splits list into two lists at the index specified.
-# leaves out the specified index from list.
-def split_array(list:list, index) -> tuple[list,list]:
-    list1 = list[:index]
-    list2 = list[index+1:]
-    return (list1, list2)
-
-def get_first_item_in(list:list):
-    for piece in list:
-        if piece:
-            return piece
-    return None

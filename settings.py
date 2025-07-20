@@ -1,6 +1,7 @@
 import pygame
 from state import State
 from button import TextButton
+from text import Text
 
 class Settings(State):
     def __init__(self, manager):
@@ -64,12 +65,3 @@ class Settings(State):
         board_size = self.board_preview.get_size()
         pos = (self.screen_size[0]//2-board_size[0]//2, 300) # x is centered w/ screen
         self.screen.blit(self.board_preview, pos)
-
-class Text:
-    def __init__(self, text, font='comic sans ms', size=50, color=(0,0,0)):
-        self.font = pygame.font.SysFont(font, size)
-        self.text = self.font.render(text, False, color)
-        self.size = self.font.size(text)
-
-    def render(self, surface, position):
-        surface.blit(self.text, position)

@@ -11,14 +11,11 @@ class State:
         self.run = False
         print(f'{type(self)} initialized!!')
 
-    def set_active(self):
-        self.run = True
+    def process(self, event, mouse_pos):
+        pass
 
-    def set_inactive(self):
-        self.run = False
-
-    def is_active(self):
-        return self.run
+    def render(self):
+        pass
 
     def activate_state(self, state):
         state.set_active()
