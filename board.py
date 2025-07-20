@@ -2,9 +2,14 @@
 from piece import *
 from math import isclose
 from player import Player, Position
+from enum import Enum
 
 MARGIN = 100
 RATIO = 880 / 982
+
+class Side(Enum):
+    LEFT = 0
+    RIGHT = 1
 
 class Board():
 
@@ -113,7 +118,10 @@ class Board():
         self.col_spacing = self._board_size[1] / 9
 
     def render(self, surface):
-        self._render_board(surface)
+        board_pos = [i-(j/2) for i, j in zip(surface.get_rect().center, self._board_size)]
+        surface.blit(self.boarder, (0, 0))
+        surface.blit(self.background, board_pos)
+
         self.render_pieces(surface)
 
     def render_pieces(self, surface):
@@ -125,7 +133,7 @@ class Board():
                         for candidate in piece.possible_moves:
                             candidate.render(surface)
 
-    def _render_board(self, surface):
-        board_pos = [i-(j/2) for i, j in zip(surface.get_rect().center, self._board_size)]
-        surface.blit(self.boarder, (0, 0))
-        surface.blit(self.background, board_pos)
+    def swap(self, side:Side):
+        ROW = 9
+        col_1, col_2 = (1, 2) if side==Side.LEFT else (6, 7)
+        self.grid[ROW][col_1], self.grid[ROW][col_2] = self.grid[ROW][col_2], self.grid[ROW][col_1]

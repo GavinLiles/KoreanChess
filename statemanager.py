@@ -2,6 +2,7 @@ from mainmenu import MainMenu
 from settings import Settings
 from game import Game
 from game_over import GameOver
+from pregame_swap import PregameSwap
 
 class StateManager:
     def __init__(self):
@@ -11,6 +12,7 @@ class StateManager:
             'game':Game(self),
             'settings':Settings(self),
             'game_over':GameOver(self),
+            'pregame_swap':PregameSwap(self)
         }
         self.current_state = self.states['main_menu']
         self.current_state.set_active()
@@ -21,11 +23,13 @@ class StateManager:
     def render(self):
         self.current_state.render()
     
-    def change_state(self, state):
-        self.current_state.set_inactive()
-        self.current_state = self.states[state]
-        self.current_state.set_active()
-
+    def change_state(self, state, data=None):
+        try:
+            self.current_state = self.states[state]
+            if data: self.current_state.recieve_data(data)
+        except KeyError as e:
+            print('State not found.')
+            exit()
 
 if __name__ == '__main__':
     import pygame

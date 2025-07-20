@@ -13,10 +13,11 @@ class MainMenu(State):
         x_pos = (self.screen_size[0]/2)-(button_size[0]/2)
 
         button_traits = {
-            'play': lambda: self.manager.change_state('game'),
+            'play': lambda: self.manager.change_state('pregame_swap'),
             'settings': lambda: self.manager.change_state('settings'),
             'exit': lambda: exit(),  # or pygame.quit()
-            'game_over': lambda: self.manager.change_state('game_over'),
+            # 'game_over': lambda: self.manager.change_state('game_over'),
+            # 'swap': lambda: self.manager.change_state('pregame_swap')
         }
         
         # create buttons from dict, add to list

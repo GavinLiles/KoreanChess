@@ -1,4 +1,4 @@
-import pygame, os, sys
+import pygame
 from state import State
 from board import Board
 
@@ -22,3 +22,7 @@ class Game(State):
 
     def render(self):
         self.board.render(self.screen)
+
+    def recieve_data(self, data=None):
+        if data: self.board = data
+        else: print('nothing was recieved')
