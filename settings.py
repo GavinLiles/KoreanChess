@@ -4,8 +4,8 @@ from button import TextButton
 from text import Text
 
 class Settings(State):
-    def __init__(self, manager):
-        super().__init__(manager)
+    def __init__(self, screen, manager):
+        super().__init__(screen, manager)
 
         board_filenames = {
             'old':   'Janggi_Board.png',
@@ -43,9 +43,8 @@ class Settings(State):
         self.text = Text('Board selection')
 
     def process(self, event, mouse_pos):
-        if event.type == pygame.QUIT:
-            return False
-
+        super().process(event, mouse_pos)
+        
         for button in self.board_select_buttons:
             button.process(event, mouse_pos)
 

@@ -40,6 +40,10 @@ class Button:
         if self.is_clicked(event, mouse_pos):
             self.func()
 
+    def update_pos(self, new_pos):
+        self.pos = new_pos
+        self.rect = pygame.Rect(new_pos[0], new_pos[1], self.width, self.height)
+
     def _default_func(self):
         print('default button function')
 
@@ -57,6 +61,10 @@ class TextButton(Button):
     def render(self, surface):
         super().render(surface)
         surface.blit(self.text_surface, self.text_rect)
+
+    def update_pos(self, new_pos):
+        super().update_pos(new_pos)
+        self.text_rect = self.text_surface.get_rect(center=(self.pos[0] + self.width/2, self.pos[1] + self.height/2))
 
 class TextureButton(Button):
 

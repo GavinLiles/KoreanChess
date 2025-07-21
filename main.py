@@ -1,13 +1,14 @@
 import pygame
-from .. import statemanager
+from statemanager import StateManager
 
 if __name__ == '__main__':
+    import pygame
+
     pygame.init()
-    screen = pygame.display.set_mode((1000, 1000))
+    screen = pygame.display.set_mode((1000, 1000), pygame.RESIZABLE)
     run = True
 
-    manager = statemanager.StateManager()
-    manager.change_state('game')
+    manager = StateManager(screen)
 
     while run:
         mouse_pos = pygame.mouse.get_pos()
@@ -24,3 +25,4 @@ if __name__ == '__main__':
 
     # Quit Pygame
     pygame.quit()
+

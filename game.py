@@ -3,8 +3,8 @@ from state import State
 from board import Board
 
 class Game(State):
-    def __init__(self, manager):
-        super().__init__(manager)
+    def __init__(self, screen, manager):
+        super().__init__( screen,manager)
         self.board = Board(self.screen)
         self.board.update(self.screen)
 
@@ -16,7 +16,7 @@ class Game(State):
             print(self.board.background.get_size())
             print(self.board)
             return False
-        
+                
         for piece in self.board.cho_player.pieces:
             piece.process(self.board, event, mouse_pos)
 

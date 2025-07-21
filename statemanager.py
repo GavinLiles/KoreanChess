@@ -5,14 +5,14 @@ from pregame_swap import PregameSwap
 from test import Test
 
 class StateManager:
-    def __init__(self):
+    def __init__(self, screen):
         self.current_state = None
         self.states = {
-            'main_menu':MainMenu(self),
-            'game':Game(self),
-            'settings':Settings(self),
-            'test':Test(self),
-            'pregame_swap':PregameSwap(self)
+            'main_menu':MainMenu(screen, self),
+            'game':Game(screen, self),
+            'settings':Settings(screen, self),
+            'test':Test(screen, self),
+            'pregame_swap':PregameSwap(screen, self)
         }
         self.current_state = self.states['main_menu']
 
@@ -38,7 +38,6 @@ if __name__ == '__main__':
     run = True
 
     manager = StateManager()
-    # manager.change_state('settings')
 
     while run:
         mouse_pos = pygame.mouse.get_pos()

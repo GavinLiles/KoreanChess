@@ -3,8 +3,8 @@ from state import State
 from timer import IncTimer
 
 class Test(State):
-    def __init__(self, manager):
-        super().__init__(manager)
+    def __init__(self, screen, manager):
+        super().__init__(screen, manager)
         self.timer = IncTimer((500, 100))
 
     def process(self, event, mouse_pos):

@@ -4,8 +4,8 @@ from board import Board, Side
 from button import TextButton
 
 class PregameSwap(State):
-    def __init__(self, manager):
-        super().__init__(manager)
+    def __init__(self, screen, manager):
+        super().__init__( screen,manager)
         self.board = Board(self.screen)
         self.board.update(self.screen)
 
@@ -21,12 +21,18 @@ class PregameSwap(State):
         ]
 
     def process(self, event, mouse_pos):
+        super().process(event, mouse_pos)
         mouse_pos = pygame.mouse.get_pos()
 
         if event.type == pygame.QUIT:
             print(self.board.background.get_size())
             print(self.board)
             return False
+        
+        if event.type == pygame.VIDEORESIZE:
+            print('pregame swap', self.screen_size)
+            for i, (button) in enumerate(self.swap_buttons):
+                button.update_pos((i*(self.screen_size[0]//3) + 100, 500))
         
         for piece in self.board.cho_player.pieces:
             piece.process(self.board, event, mouse_pos)

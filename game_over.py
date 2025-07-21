@@ -3,8 +3,8 @@ from state import State
 from button import TextButton
 
 class GameOver(State):
-    def __init__(self, manager):
-        super().__init__(manager)
+    def __init__(self, screen, manager):
+        super().__init__(screen, manager)
         self.buttons = []
         self.title = self.DEFAULT_FONT.render('Game Over', False, (0,0,0))
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)

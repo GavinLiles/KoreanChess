@@ -3,8 +3,8 @@ from button import TextButton
 from state import State
 
 class MainMenu(State):
-    def __init__(self, manager):
-        super().__init__(manager) # call parent init
+    def __init__(self, screen, manager):
+        super().__init__(screen, manager) # call parent init
         self.buttons = []
         self.title = self.DEFAULT_FONT.render('Korean Chess', False, (0,0,0))
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
