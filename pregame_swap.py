@@ -30,7 +30,6 @@ class PregameSwap(State):
             return False
         
         if event.type == pygame.VIDEORESIZE:
-            print('pregame swap', self.screen_size)
             for i, (button) in enumerate(self.swap_buttons):
                 button.update_pos((i*(self.screen_size[0]//3) + 100, 500))
         

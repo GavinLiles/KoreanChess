@@ -9,7 +9,7 @@ class Game(State):
         self.board.update(self.screen)
 
     def process(self, event, mouse_pos):
-        mouse_pos = pygame.mouse.get_pos()
+        super().process(event, mouse_pos)
         self.board.render(self.screen)
 
         if event.type == pygame.QUIT:

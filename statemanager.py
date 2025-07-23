@@ -34,10 +34,10 @@ if __name__ == '__main__':
     import pygame
 
     pygame.init()
-    screen = pygame.display.set_mode((1000, 1000))
+    screen = pygame.display.set_mode((1000, 1000), pygame.RESIZABLE)
     run = True
 
-    manager = StateManager()
+    manager = StateManager(screen)
 
     while run:
         mouse_pos = pygame.mouse.get_pos()

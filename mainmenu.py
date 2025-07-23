@@ -27,6 +27,7 @@ class MainMenu(State):
             y_pos_factor += 1
 
     def process(self, event, mouse_pos):
+        super().process(event, mouse_pos)
         for button in self.buttons:
             button.process(event, mouse_pos)
 

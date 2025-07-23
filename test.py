@@ -8,6 +8,7 @@ class Test(State):
         self.timer = IncTimer((500, 100))
 
     def process(self, event, mouse_pos):
+        super().process(event, mouse_pos)
         self.timer.process(event, mouse_pos)
         return super().process(event, mouse_pos)
     

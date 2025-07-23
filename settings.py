@@ -7,6 +7,7 @@ class Settings(State):
     def __init__(self, screen, manager):
         super().__init__(screen, manager)
 
+        # making button functions. they change the file used on the board
         board_filenames = {
             'old':   'Janggi_Board.png',
             'brown': 'JanggiBrown.svg',
@@ -16,16 +17,18 @@ class Settings(State):
             'wood':  'JanggiWood.svg',
         }
         board_select_button_traits = {
-            name: (lambda path=path: self.manager.states['game'].board.change_board(f'assets/boards/{path}'))
+            name: (lambda path=path: self.manager.states['pregame_swap'].board.change_board(f'assets/boards/{path}'))
             for name, path in board_filenames.items()
         }
 
+        # button attributes
         button_size = (100, 75)
         x_pos, y_pos = 0, 200
         button_spacing = button_size[0]+10
         width_of_row = (button_size[0] + button_spacing) * len(board_select_button_traits)
         offset = (self.screen_size[0]-(width_of_row//2)) // 2
 
+        # button init
         self.board_select_buttons = []
         for i, (label, function) in enumerate(board_select_button_traits.items()):
             x_pos = (button_spacing * i) + offset
@@ -60,7 +63,7 @@ class Settings(State):
         self.text.render(self.screen, (self.screen_size[0]/2-(self.text.size[0]/2), 100))
         
         # rendering board
-        self.board_preview = pygame.transform.scale_by(self.manager.states['game'].board.background, .25)
+        self.board_preview = pygame.transform.scale_by(self.manager.states['pregame_swap'].board.background, .25)
         board_size = self.board_preview.get_size()
         pos = (self.screen_size[0]//2-board_size[0]//2, 300) # x is centered w/ screen
         self.screen.blit(self.board_preview, pos)
