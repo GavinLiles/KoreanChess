@@ -1,13 +1,17 @@
 import pygame
-from state import State
+from states.state import State
 from board import Board, Side
 from button import TextButton
+from player import Player, Position
 
 class PregameSwap(State):
     def __init__(self, screen, manager):
         super().__init__( screen,manager)
         self.board = Board(self.screen)
         self.board.update(self.screen)
+
+        self.cho_player = Player(self.board, 'cho', Position.BOTTOM)
+        self.han_player = Player(self.board, 'han', Position.TOP)
 
         button_size = (150, 50)
         button_traits = {
@@ -24,18 +28,6 @@ class PregameSwap(State):
         super().process(event, mouse_pos)
         mouse_pos = pygame.mouse.get_pos()
 
-        if event.type == pygame.QUIT:
-            print(self.board.background.get_size())
-            print(self.board)
-            return False
-        
-        if event.type == pygame.VIDEORESIZE:
-            for i, (button) in enumerate(self.swap_buttons):
-                button.update_pos((i*(self.screen_size[0]//3) + 100, 500))
-        
-        for piece in self.board.cho_player.pieces:
-            piece.process(self.board, event, mouse_pos)
-
         for button in self.swap_buttons: button.process(event, mouse_pos)
 
     def render(self):
@@ -45,4 +37,4 @@ class PregameSwap(State):
 
     def move_to_game(self):
         self.manager.change_state('game')
-        self.manager.current_state.recieve_data(self.board)
+        self.manager.current_state.recieve_data([self.board, self.cho_player, self.han_player])

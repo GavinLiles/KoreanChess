@@ -1,5 +1,5 @@
 import pygame
-from state import State
+from states.state import State
 from button import TextButton
 from text import Text
 

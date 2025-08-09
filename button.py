@@ -18,19 +18,19 @@ class Button:
         pygame.draw.rect(surface, self.color, self.rect)
 
     def is_left_click(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            return True
-        return False
+        return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1
+
+    def is_right_click(self, event, mouse_pos):
+        return event.type == pygame.MOUSEBUTTONDOWN and event.button == 3
 
     def is_clicked(self, event, mouse_pos):
-        if self.rect.collidepoint(mouse_pos) and self.is_left_click(event):
-            return True
-        return False
+        return self.rect.collidepoint(mouse_pos) and self.is_left_click(event)
+
+    def is_right_clicked(self, event, mouse_pos):
+        return self.rect.collidepoint(mouse_pos) and self.is_right_click(event)
 
     def is_hovered(self, mouse_pos):
-        if self.rect.collidepoint(mouse_pos):
-            return True
-        return False
+        return self.rect.collidepoint(mouse_pos)
 
     def process(self, event, mouse_pos):
         if self.is_hovered(mouse_pos):
@@ -46,8 +46,6 @@ class Button:
 
     def _default_func(self):
         print('default button function')
-
-
 
 class TextButton(Button):
     
@@ -79,6 +77,9 @@ class TextureButton(Button):
             print(f'file {image_file} not found. using a default image')
             self.image = pygame.image.load(image_file).convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
+
+    def set_size(self, size):
+        self.image = pygame.transform.scale(self.image, size)
             
     def render(self, surface):
         surface.blit(self.image, self.pos)

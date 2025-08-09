@@ -21,10 +21,6 @@ class Board():
         self.update_piece_size((75, 75))
         self.international = True
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self._board_size)]
-        self.cho_player = Player(self, 'cho', Position.BOTTOM)
-        self.han_player = Player(self, 'han', Position.TOP)
-        self.cho_player.add_pieces_to_board(self)
-        self.han_player.add_pieces_to_board(self)
         self.update(surface)
 
     def __str__(self):
@@ -41,8 +37,7 @@ class Board():
         return string
 
     def process(self, event, mouse_pos):
-        for piece in self.cho_player.pieces:
-            piece.process(self, event, mouse_pos)
+        super().process(event, mouse_pos)
 
     def at(self, pos:tuple[int]):
         try:
@@ -64,9 +59,7 @@ class Board():
     
     def is_pos_avaliable(self, pos:tuple[int]) -> bool:
         try:
-            if self.grid[pos[0]][pos[1]] is None:
-                return True
-            return False
+            return True if self.grid[pos[0]][pos[1]] is None else False
         except IndexError:
             return False
 
@@ -122,16 +115,9 @@ class Board():
         surface.blit(self.boarder, (0, 0))
         surface.blit(self.background, board_pos)
 
-        self.render_pieces(surface)
-
-    def render_pieces(self, surface):
         for row in self.grid:
             for piece in row:
-                if piece is not None:
-                    piece.render(surface)
-                    if piece.possible_moves and piece.selected:
-                        for candidate in piece.possible_moves:
-                            candidate.render(surface)
+                piece.render(surface) if piece else None
 
     def swap(self, side:Side):
         ROW = 9

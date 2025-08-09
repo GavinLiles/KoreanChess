@@ -1,5 +1,5 @@
-import pygame
-from statemanager import StateManager
+import pygame, sys
+from states.statemanager import StateManager
 
 if __name__ == '__main__':
     import pygame
@@ -9,6 +9,7 @@ if __name__ == '__main__':
     run = True
 
     manager = StateManager(screen)
+    manager.change_state('main_menu')
 
     while run:
         mouse_pos = pygame.mouse.get_pos()

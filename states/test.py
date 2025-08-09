@@ -1,5 +1,5 @@
 # test.py
-from state import State
+from states.state import State
 from timer import IncTimer
 
 class Test(State):

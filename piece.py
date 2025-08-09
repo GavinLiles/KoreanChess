@@ -3,10 +3,25 @@ from button import *
 from misc_functions import *
 
 PATH = 'assets/Pieces/' # path to piece images
+# PATH = 'assets/pieces_white/' # path to piece images
 DEAF_IMG = 'assets/Pieces/Blank_Piece.png'
 BOLD, BOLD_END = '\033[1m', '\033[0m'
 
 class Piece(TextureButton):
+    PALACE_SPOTS = [
+            (7, 3), (7, 4), (7, 5),
+            (8, 3), (8, 4), (8, 5),
+            (9, 3), (9, 4), (9, 5),
+        ]
+    PALACE_DIAGONALS = [
+            (7,3), (7,5),
+                (8,4),
+            (9,3), (9,5),
+    ]
+    PALACE_SPOTS.extend(add_tuples(x, (-7, 0)) for x in PALACE_SPOTS) # other palace
+    PALACE_DIAGONALS.extend(add_tuples(x, (-7, 0)) for x in PALACE_DIAGONALS) # other palace diag
+
+
     def __init__(self, grid_pos, pos, size, team=None,
                  image_file=DEAF_IMG,
                  international=True):
@@ -33,7 +48,8 @@ class Piece(TextureButton):
     def get_position(self) -> tuple[int]:
         return self.location
 
-    def process(self, board, event, mouse_pos):
+    def process(self, board, event, mouse_pos) -> bool:
+        ''' Pieces will return true if a valid move was made '''
         if self.is_hovered(mouse_pos):
             self.color = self.hover_color
         else:
@@ -54,6 +70,7 @@ class Piece(TextureButton):
                     board.move_piece(self.location, candidate.location)
                     self.set_position(pos, render_pos)
                     self.possible_moves.clear()
+                    return True
 
         # if there was a left click, but the piece itself is not clicked, unselect it
         # must clear possible_moves so when you unselect it, you cant click on those spots
@@ -61,14 +78,16 @@ class Piece(TextureButton):
             self.selected = False
             self.possible_moves.clear()
 
-    def filter_moves(self, board, possible_spots:list[tuple[int]]) -> list[tuple[int,int]]:
+    def filter_moves(self, board, possible_spots:list[tuple[int,int]]) -> list[tuple[int,int]]:
+        ''' takes in move deltas and returns a list of deltas that are valid moves '''
         curr_pos = self.get_position()
         valid_spots = []
+
         for delta in possible_spots:
             pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
-            print(f'{board.at(pos)} at {pos}')
             if board.is_pos_avaliable(pos):
                 valid_spots.append(delta)
+
         return valid_spots
 
     def set_piece_image(self) -> None:
@@ -77,6 +96,9 @@ class Piece(TextureButton):
             file_name += 'I_' if self.international else ''
             file_name += 'Cho_' if self.team.capitalize() == 'Cho' else 'Han_'
             file_name += str(self).capitalize() + '.png'
+            # file_name += 'blue_' if self.team.capitalize() == 'Cho' else 'red_'
+            # file_name += str(self).lower() + '.svg'
+
             self.set_image(file_name)
         else:
             self.set_image(DEAF_IMG)
@@ -88,33 +110,23 @@ class Piece(TextureButton):
             candidates.append(Candidate(pos, render_pos, board.piece_size))
         return candidates
 
+    def render(self, surface):
+        super().render(surface)
+        if self.possible_moves and self.selected:
+            for candidate in self.possible_moves:
+                candidate.render(surface)
+
+    def is_in_palace(self, pos:tuple[int]) -> bool:
+        if pos in self.PALACE_SPOTS:
+            return True
+        return False
+
 class Royalty(Piece):
     def __init__(self, grid_pos, pos, size, team=None, image_file='assets/Pieces/Blank_Piece.png'):
         super().__init__(grid_pos, pos, size, team, image_file)
 
     def __str__(self):
         return super().__str__()
-
-    def is_in_palace(self, pos:tuple[int]) -> bool:
-        PALACE_SPOTS = [
-            (8, 4), # middle
-            (9, 4), # bottom middle
-            (7, 4), # top middle
-            (8, 3), # middle left
-            (9, 3), # bottom left
-            (7, 3), # top left
-            (8, 5), # middle right
-            (9, 5), # bottom right
-            (7, 5), # top right
-        ]
-
-        # opposing side's palace
-        OTHER_PALACE = [add_tuples(x, (-7, 0)) for x in PALACE_SPOTS]
-        PALACE_SPOTS.extend(OTHER_PALACE)
-
-        if pos in PALACE_SPOTS:
-            return True
-        return False
     
     def filter_moves(self, board, possible_spots:list[tuple[int]]) -> list[tuple[int]]:
         valid_spots, curr_pos = [], self.get_position()
@@ -231,6 +243,11 @@ class King(Royalty):
             possible_spots.append(add_tuples(self.location, delta))
         return possible_spots
 
+    def process(self, board, event, mouse_pos):
+        super().process(board, event, mouse_pos)
+        if self.is_right_click(event, mouse_pos):
+            return True
+
 class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, team)
@@ -276,7 +293,7 @@ class Pawn(Piece):
     def get_possible_moves(self, board) -> list[tuple[int]]:
         possible_spots = []
         possible_deltas = [
-            (-1, 0), # up
+            (-1, 0) if self.team == 'cho' else (1, 0), # up or down depending on team
             ( 0,-1), # left
             ( 0, 1), # right
             ]

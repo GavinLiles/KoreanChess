@@ -5,8 +5,8 @@ An implementation of chess made out of spite.
 ## TODO
 
 - NEED TO FIX/ADD diagonal moves to pieces in palace
-    - pieces can only move diagonally across the printed lines
-- Add a swap phase
+    - pieces can **only** move diagonally across the printed lines
+- ~~Add a swap phase~~
 - add win conditions
     - bikjang
         - A player may choose to place their king in direct sight of the opposing player's king.
@@ -18,14 +18,14 @@ An implementation of chess made out of spite.
     - player class need captured_peices list
     - player class needs point variable
 - multiplayer
-- pieces mvoes with cursor when selected
+- pieces moves with cursor when selected
 - pieces design selection in settings
 - timer
 - move log
 - sound effects
--  music
--  AI
--  pass turn
+- music
+- AI
+- pass turn
 
 
 Board and pieces taken from [this Github repo](https://github.com/Kadagaden/chess-pieces)

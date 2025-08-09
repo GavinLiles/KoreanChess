@@ -1,8 +1,8 @@
-from mainmenu import MainMenu
-from settings import Settings
-from game import Game
-from pregame_swap import PregameSwap
-from test import Test
+from states.mainmenu import MainMenu
+from states.settings import Settings
+from states.game import Game
+from states.pregame_swap import PregameSwap
+from states.test import Test
 
 class StateManager:
     def __init__(self, screen):

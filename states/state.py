@@ -12,6 +12,11 @@ class State:
         print(f'{type(self)} initialized!!')
 
     def process(self, event, mouse_pos):
+        if event.type == pygame.QUIT:
+            print(self.board.background.get_size())
+            print(self.board)
+            return False
+
         if event.type == pygame.VIDEORESIZE:
             self.screen_size = self.screen.get_size()
 
