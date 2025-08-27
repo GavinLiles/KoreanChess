@@ -41,8 +41,8 @@ class Board():
 
     def at(self, pos:tuple[int]):
         try:
-            # pos = self.grid[pos[0]][pos[1]]
-            pos = self.grid[pos[1]][pos[0]]
+            pos = self.grid[pos[0]][pos[1]]
+            # pos = self.grid[pos[1]][pos[0]]
             if pos:
                 return pos
             return None

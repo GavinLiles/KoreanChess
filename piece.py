@@ -18,8 +18,8 @@ class Piece(TextureButton):
                 (8,4),
             (9,3), (9,5),
     ]
-    PALACE_SPOTS.extend(add_tuples(x, (-7, 0)) for x in PALACE_SPOTS) # other palace
-    PALACE_DIAGONALS.extend(add_tuples(x, (-7, 0)) for x in PALACE_DIAGONALS) # other palace diag
+    PALACE_SPOTS.extend([add_tuples(x, (-7, 0)) for x in PALACE_SPOTS]) # other palace
+    PALACE_DIAGONALS.extend([add_tuples(x, (-7, 0)) for x in PALACE_DIAGONALS]) # other palace diag
 
 
     def __init__(self, grid_pos, pos, size, team=None,
@@ -85,7 +85,11 @@ class Piece(TextureButton):
 
         for delta in possible_spots:
             pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
+            print(f'self: {self.team}')
+            if board.at(pos): print(f'other piece: {board.at(pos), board.at(pos).team}')
             if board.is_pos_avaliable(pos):
+                valid_spots.append(delta)
+            elif board.at(pos) and board.at(pos).team != self.team:
                 valid_spots.append(delta)
 
         return valid_spots
