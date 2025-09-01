@@ -13,13 +13,15 @@ class Game(State):
             'han': Player(self.board, 'han', Position.TOP)
         }
         self.current_player = 'cho'
+        self.piece_count = self.board.piece_count()
 
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)
         
         for piece in self.players[self.current_player].pieces:
             # if move made, swap turn
-            if piece.process(self.board, event, mouse_pos): # NOTE: process ret true if valid move made
+            if piece.process(self.board, event, mouse_pos): # NOTE: process returns true if valid move made
+                print('piece has been captured') if self.piece_count != self.board.piece_count() else None
                 self._swap_turn()
 
 

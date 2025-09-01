@@ -36,6 +36,13 @@ class Board():
             string += '\n'
         return string
 
+    def piece_count(self):
+        count = 0
+        for ls in self.grid:
+            for item in ls:
+                count += 1 if item else 0
+        return count
+
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)
 
@@ -69,16 +76,14 @@ class Board():
         except IndexError:
             print(f'given index {pos} is not within bounds.')
 
-    def move_piece(self, old_pos:tuple[int,int], new_pos:tuple[int,int]):
-        if self.at(old_pos) is None:
-            print('nothing is in old position')
-        if self.at(new_pos):
-            print('piece is aleady at new position')
+    def move_piece(self, old_pos:tuple[int,int], new_pos:tuple[int,int]) -> piece.piece:
+        captured_piece = self.at(new_pos) if self.at(new_pos) else None
 
-        piece = self.grid[old_pos[0]][old_pos[1]]
-        print(piece)
+        piece = self.at(old_pos)
         self.insert_piece(new_pos, piece)
         self.insert_piece(old_pos, None)
+
+        return captured_piece
 
     def update(self, surface):
         self._update_board_size()

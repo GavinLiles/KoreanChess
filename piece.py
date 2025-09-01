@@ -60,14 +60,13 @@ class Piece(TextureButton):
             self.possible_moves = self.func(board)
             self.possible_moves = self.create_candidates(board)
 
-
         if self.possible_moves:
             for candidate in self.possible_moves:
                 if candidate.is_clicked(event,mouse_pos):
                     # get new render_pos, move piece on board, update piece's position
                     pos = candidate.location
                     render_pos = board.calculate_render_pos(pos)
-                    board.move_piece(self.location, candidate.location)
+                    captured_piece = board.move_piece(self.location, candidate.location)
                     self.set_position(pos, render_pos)
                     self.possible_moves.clear()
                     return True
@@ -85,8 +84,6 @@ class Piece(TextureButton):
 
         for delta in possible_spots:
             pos = tuple(map(lambda i, j: i + j, curr_pos, delta))
-            print(f'self: {self.team}')
-            if board.at(pos): print(f'other piece: {board.at(pos), board.at(pos).team}')
             if board.is_pos_avaliable(pos):
                 valid_spots.append(delta)
             elif board.at(pos) and board.at(pos).team != self.team:
@@ -214,7 +211,6 @@ class Candidate(Piece):
         return 'candidate'
 
     def clicked(self):
-        print(self.location)
         return self.location
 
 class King(Royalty):

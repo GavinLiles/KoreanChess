@@ -40,6 +40,9 @@ class Player():
     def __str__(self):
         return self.color + '\n' + str(self.pieces)
 
+    def piece_count(self) -> int:
+        return len(self.pieces)
+
     def add_pieces_to_board(self, board):
         for piece in self.pieces:
             board.insert_piece(piece.location, piece)

@@ -9,7 +9,6 @@ class State:
         self.screen = screen
         self.screen_size = pygame.display.get_surface().get_size() # size of screen
         self.run = False
-        print(f'{type(self)} initialized!!')
 
     def process(self, event, mouse_pos):
         if event.type == pygame.QUIT:
