@@ -19,17 +19,25 @@ class Game(State):
         super().process(event, mouse_pos)
         
         for piece in self.players[self.current_player].pieces:
+            valid_move, captured_piece = piece.process(self.board, event, mouse_pos)
+            
             # if move made, swap turn
-            if piece.process(self.board, event, mouse_pos): # NOTE: process returns true if valid move made
-                print('piece has been captured') if self.piece_count != self.board.piece_count() else None
-                self._swap_turn()
+            if valid_move:
+                for player in ('cho', 'han'):
+                    if captured_piece in self.players[player].pieces:
+                        self.players[player].pieces.remove(captured_piece)
+                        self.players[player].captured_pieces.append(captured_piece)
 
+                self._swap_turn()
 
     def render(self):
         self.board.render(self.screen)
 
     def _swap_turn(self):
         self.current_player = 'han' if self.current_player == 'cho' else 'cho'
+        print('cho piece count:', len(self.players['cho'].pieces), 'han piece count:', len(self.players['han'].pieces))
+        print('total piece count:', self.board.piece_count())
+        print()
 
     def recieve_data(self, data=None):
         if data: self.board, self.players['cho'], self.players['han'] = data

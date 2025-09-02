@@ -32,6 +32,7 @@ class Player():
         self.piece_size = (75, 75)
         self.color = team
         self.pieces = []
+        self.captured_pieces = []
         self.international = True
         self.turn = False
         self._init_pieces(board, position, team)

@@ -69,13 +69,14 @@ class Piece(TextureButton):
                     captured_piece = board.move_piece(self.location, candidate.location)
                     self.set_position(pos, render_pos)
                     self.possible_moves.clear()
-                    return True
+                    return True, captured_piece
 
         # if there was a left click, but the piece itself is not clicked, unselect it
         # must clear possible_moves so when you unselect it, you cant click on those spots
         if self.is_left_click(event) and not self.is_clicked(event, mouse_pos) and self.selected:
             self.selected = False
             self.possible_moves.clear()
+        return False, None
 
     def filter_moves(self, board, possible_spots:list[tuple[int,int]]) -> list[tuple[int,int]]:
         ''' takes in move deltas and returns a list of deltas that are valid moves '''
@@ -244,9 +245,10 @@ class King(Royalty):
         return possible_spots
 
     def process(self, board, event, mouse_pos):
-        super().process(board, event, mouse_pos)
+        valid_move, captured_piece = super().process(board, event, mouse_pos)
         if self.is_right_click(event, mouse_pos):
-            return True
+            valid_move = True
+        return valid_move, captured_piece
 
 class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
