@@ -49,7 +49,6 @@ class Board():
     def at(self, pos:tuple[int]):
         try:
             pos = self.grid[pos[0]][pos[1]]
-            # pos = self.grid[pos[1]][pos[0]]
             if pos:
                 return pos
             return None
@@ -76,7 +75,7 @@ class Board():
         except IndexError:
             print(f'given index {pos} is not within bounds.')
 
-    def move_piece(self, old_pos:tuple[int,int], new_pos:tuple[int,int]) -> piece.piece:
+    def move_piece(self, old_pos:tuple[int,int], new_pos:tuple[int,int]) -> Piece:
         captured_piece = self.at(new_pos) if self.at(new_pos) else None
 
         piece = self.at(old_pos)

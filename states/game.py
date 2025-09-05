@@ -12,7 +12,7 @@ class Game(State):
             'cho': Player(self.board, 'cho', Position.BOTTOM),
             'han': Player(self.board, 'han', Position.TOP)
         }
-        self.current_player = 'cho'
+        self.current_player = 'han'
         self.piece_count = self.board.piece_count()
 
     def process(self, event, mouse_pos):
@@ -28,14 +28,14 @@ class Game(State):
                         self.players[player].pieces.remove(captured_piece)
                         self.players[player].captured_pieces.append(captured_piece)
 
-                self._swap_turn()
+                # self._swap_turn()
 
     def render(self):
         self.board.render(self.screen)
 
     def _swap_turn(self):
         self.current_player = 'han' if self.current_player == 'cho' else 'cho'
-        print('cho piece count:', len(self.players['cho'].pieces), 'han piece count:', len(self.players['han'].pieces))
+        print('cho count:', len(self.players['cho'].pieces), 'han count:', len(self.players['han'].pieces))
         print('total piece count:', self.board.piece_count())
         print()
 

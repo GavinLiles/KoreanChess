@@ -13,13 +13,20 @@ class Piece(TextureButton):
             (8, 3), (8, 4), (8, 5),
             (9, 3), (9, 4), (9, 5),
         ]
-    PALACE_DIAGONALS = [
-            (7,3), (7,5),
-                (8,4),
-            (9,3), (9,5),
-    ]
+    # PALACE_DIAGONALS = [
+    #         (7,3), (7,5),
+    #             (8,4),
+    #         (9,3), (9,5),
+    # ]
+    PALACE_DIAGONAL = {
+        (9,3):[(-1,1)],
+        (9,5):[(-1,-1)],
+        (8,4):[(-1,-1),(-1,1)],
+        (2,3):[(-1,1)],
+        (2,5):[(-1,-1)],
+        (1,4):[(-1,-1),(-1,1)],
+    }
     PALACE_SPOTS.extend([add_tuples(x, (-7, 0)) for x in PALACE_SPOTS]) # other palace
-    PALACE_DIAGONALS.extend([add_tuples(x, (-7, 0)) for x in PALACE_DIAGONALS]) # other palace diag
 
 
     def __init__(self, grid_pos, pos, size, team=None,
@@ -303,6 +310,12 @@ class Pawn(Piece):
         possible_deltas = self.filter_moves(board, possible_deltas)
         for delta in possible_deltas:
             possible_spots.append(add_tuples(self.location, delta))
+
+
+        if self.location in self.PALACE_DIAGONAL:
+            t = map(lambda d: add_tuples(self.location, d), self.PALACE_DIAGONAL[self.location])
+            possible_spots.extend(list(t))
+
         return possible_spots
 
 class Elephant(Animal):
