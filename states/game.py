@@ -12,7 +12,7 @@ class Game(State):
             'cho': Player(self.board, 'cho', Position.BOTTOM),
             'han': Player(self.board, 'han', Position.TOP)
         }
-        self.current_player = 'han'
+        self.current_player = 'cho'
         self.piece_count = self.board.piece_count()
 
     def process(self, event, mouse_pos):
