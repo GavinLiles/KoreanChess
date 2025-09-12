@@ -336,7 +336,8 @@ class Elephant(Animal):
         return 'elephant'
 
     def get_possible_moves(self, board) -> list[tuple[int]]:
-        possible_spots = [
+        possible_spots = []
+        possible_deltas = [
             (-3, -2), # top left
             (-3,  2), # top right
             (-2, -3), # left top
@@ -346,9 +347,10 @@ class Elephant(Animal):
             ( 3, -2), # bottom left
             ( 3,  2), # bottom right
         ]
-        possible_spots = self.filter_moves(board, possible_spots)
-        print(f'Elephant clicked at {self.location}')
-        print(f'Possible moevs for this piece: {possible_spots}')
+        possible_deltas = self.filter_moves(board, possible_deltas)
+        for delta in possible_deltas:
+            possible_spots.append(add_tuples(self.location, delta))
+    
         return possible_spots
 
 class Horse(Animal):
@@ -365,7 +367,8 @@ class Horse(Animal):
         return 'horse'
 
     def get_possible_moves(self, board) -> list[tuple[int]]:
-        possible_spots = [
+        possible_spots = []
+        possible_deltas = [
             (-2,  1), # top right
             (-2, -1), # top left
             (-1, -2), # left top
@@ -375,12 +378,12 @@ class Horse(Animal):
             ( 2,  1), # bottom right
             ( 2, -1), # bottom left
         ]
-        print(f'Horse clicked at position {self.location}.')
-        possible_spots = self.filter_moves(board, possible_spots)
-        
-        print(f'possbile moves for this piece: {possible_spots}')
-        return possible_spots
+        possible_deltas = self.filter_moves(board, possible_deltas)
+        for delta in possible_deltas:
+            possible_spots.append(add_tuples(self.location, delta))
 
+        return possible_spots
+    
 class Cannon(Artillery):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, team)
@@ -394,7 +397,6 @@ class Cannon(Artillery):
         return 'Cannon'
 
     def get_possible_moves(self, board) -> list[tuple[int]]:
-        print(f'Cannon clicked at pos {self.location}')
         possible_spots = []
         lists_to_process = self.get_adjacent_rows_and_cols(board)
 
@@ -428,7 +430,6 @@ class Chariot(Artillery):
         return 'chariot'
 
     def get_possible_moves(self, board) -> list[tuple[int]]:
-        print('Chariot clicked at pos', self.location)
         possible_spots = []
         adj_rows_and_cols = self.get_adjacent_rows_and_cols(board)
 
@@ -449,5 +450,18 @@ class Chariot(Artillery):
                 elif piece:
                     break
 
+        # will get the diagonal moves that the piece can make in the palace
+        if self.location in self.PALACE_SPOTS:
+            deltas = [(-1,-1), (-1, 1), ( 1,-1), ( 1, 1)]
+
+            for delta in deltas:
+                pos = add_tuples(delta, self.location)
+
+                if pos in self.PALACE_SPOTS and pos in self.PALACE_DIAGONAL.keys():
+                    possible_spots.append(pos)
+                    x = delta[0] + (1 if delta[0] > 0 else -1)
+                    y = delta[1] + (1 if delta[1] > 0 else -1)
+                    deltas.append((x,y))
+        
         return possible_spots
 

@@ -18,6 +18,7 @@ class Game(State):
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)
         
+        # process each piece
         for piece in self.players[self.current_player].pieces:
             valid_move, captured_piece = piece.process(self.board, event, mouse_pos)
             
@@ -28,7 +29,7 @@ class Game(State):
                         self.players[player].pieces.remove(captured_piece)
                         self.players[player].captured_pieces.append(captured_piece)
 
-                # self._swap_turn()
+                self._swap_turn()
 
     def render(self):
         self.board.render(self.screen)
