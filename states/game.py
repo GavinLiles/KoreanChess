@@ -1,6 +1,7 @@
 import pygame
 from states.state import State
 from board import Board
+from piece import King
 from player import Player, Position
 
 class Game(State):
@@ -22,14 +23,17 @@ class Game(State):
         for piece in self.players[self.current_player].pieces:
             valid_move, captured_piece = piece.process(self.board, event, mouse_pos)
             
-            # if move made, swap turn
+            # if move made, capture pieces as necessary and swap turn
+            if isinstance(piece, King) and piece.is_in_check(self.board):
+                print('CHECK!')
+                
             if valid_move:
                 for player in ('cho', 'han'):
                     if captured_piece in self.players[player].pieces:
                         self.players[player].pieces.remove(captured_piece)
                         self.players[player].captured_pieces.append(captured_piece)
-
                 self._swap_turn()
+
 
     def render(self):
         self.board.render(self.screen)

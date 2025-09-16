@@ -37,6 +37,7 @@ class Player():
         self.turn = False
         self._init_pieces(board, position, team)
         self.add_pieces_to_board(board)
+        self.king = board.at((1, 4) if color == 'han' else (8, 4))
 
     def __str__(self):
         return self.color + '\n' + str(self.pieces)

@@ -250,18 +250,26 @@ class King(Royalty):
             possible_spots.extend(t)
 
         # find spots that King cant move to bc it will be captured if it do do that yk
-        matching_spots = {}
+        matching_spots = []
         for row in board.grid:
             for item in row:
                 if item and not isinstance(item, King) and item.team != self.team:
                     matching_spots.extend(set(item.get_possible_moves(board)).intersection(set(possible_spots)))
-        return list(set(possible_spots) - matching_spots)
+        return list(set(possible_spots) - set(matching_spots))
 
     def process(self, board, event, mouse_pos):
         valid_move, captured_piece = super().process(board, event, mouse_pos)
         if self.is_right_click(event, mouse_pos):
             valid_move = True
         return valid_move, captured_piece
+
+    def is_in_check(self, board):
+        spots = []
+        for row in board.grid:
+            for item in row:
+                if item and not isinstance(item, King) and item.team != self.team:
+                    spots.extend(item.get_possible_moves(board))
+        return self.location in spots
 
 class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
@@ -325,7 +333,6 @@ class Pawn(Piece):
             t = list(filter(lambda tup: tup[0] < x, t) if self.team == 'cho' else filter(lambda tup: tup[0] > x, t))
             possible_spots.extend(t)
 
-        print(self.team)
         return possible_spots
 
 class Elephant(Animal):
