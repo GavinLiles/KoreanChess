@@ -4,9 +4,6 @@ An implementation of chess made out of spite.
 
 ## TODO
 
-- NEED TO FIX/ADD diagonal moves to pieces in palace
-    - pieces can **only** move diagonally across the printed lines
-- ~~Add a swap phase~~
 - add win conditions
     - bikjang
         - A player may choose to place their king in direct sight of the opposing player's king.
@@ -15,7 +12,6 @@ An implementation of chess made out of spite.
         that initiated bikjang checkmates the opposing player. This can happen more than once
         by the same player
 - add point tracker
-    - ~~player class need captured_peices list~~
     - player class needs point variable
 - multiplayer
 - pieces moves with cursor when selected

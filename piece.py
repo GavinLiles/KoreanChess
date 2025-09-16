@@ -249,7 +249,13 @@ class King(Royalty):
             t = list(map(lambda d: add_tuples(self.location, d), self.PALACE_DIAGONAL[self.location]))
             possible_spots.extend(t)
 
-        return possible_spots
+        # find spots that King cant move to bc it will be captured if it do do that yk
+        matching_spots = {}
+        for row in board.grid:
+            for item in row:
+                if item and not isinstance(item, King) and item.team != self.team:
+                    matching_spots.extend(set(item.get_possible_moves(board)).intersection(set(possible_spots)))
+        return list(set(possible_spots) - matching_spots)
 
     def process(self, board, event, mouse_pos):
         valid_move, captured_piece = super().process(board, event, mouse_pos)
