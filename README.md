@@ -5,14 +5,7 @@ An implementation of chess made out of spite.
 ## TODO
 
 - add win conditions
-    - bikjang
-        - A player may choose to place their king in direct sight of the opposing player's king.
-        if this happens, the opposing player must move their king since they are now in check.
-        However, if the player decides to do this, the game ends in a draw. Even if the player
-        that initiated bikjang checkmates the opposing player. This can happen more than once
-        by the same player
 - add point tracker
-    - player class needs point variable
 - multiplayer
 - pieces moves with cursor when selected
 - pieces design selection in settings
@@ -23,5 +16,6 @@ An implementation of chess made out of spite.
 - AI
 - pass turn
 
+**bikjang** - A player may choose to place their king in direct sight of the opposing player's king.if this happens, the opposing player must move their king since they are now in check. However, if the player decides to do this, the game ends in a draw. Even if the player that initiated bikjang checkmates the opposing player. This can happen more than once by the same player.
 
 Board and pieces taken from [this Github repo](https://github.com/Kadagaden/chess-pieces)

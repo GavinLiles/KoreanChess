@@ -275,6 +275,14 @@ class King(Royalty):
                     spots.extend(item.get_possible_moves(board))
         return self.location in spots
 
+    def is_in_bikjang(self, board):
+        col_index, row_index = self.location
+        col = [col[row_index] for col in board.grid]
+        pieces = [item for item in col if item] # remove empty space  
+        return len(pieces) == 2 and isinstance(pieces[0], King) and isinstance(pieces[1], King)
+
+
+
 class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 
         super().__init__(grid_pos, pos, size, team)

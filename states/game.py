@@ -15,6 +15,7 @@ class Game(State):
         }
         self.current_player = 'cho'
         self.player_in_check = None
+        self.bikjang_initiator = None
         self.piece_count = self.board.piece_count()
 
     def process(self, event, mouse_pos):
@@ -28,9 +29,13 @@ class Game(State):
             if (not self.player_in_check) or (self.player_in_check and isinstance(piece, King)):
                 valid_move, captured_piece = piece.process(self.board, event, mouse_pos)
             
-            # mark a player if they're in check
-            if isinstance(piece, King) and piece.is_in_check(self.board):
-                self.player_in_check = piece.team
+            # check for a check or bikjang
+            if isinstance(piece, King):
+                if piece.is_in_check(self.board):
+                    self.player_in_check = piece.team
+                elif piece.is_in_bikjang(self.board) and not self. bikjang_initiator:
+                    self.bikjang_initiator = self.current_player
+                    print(self.current_player, 'initiated bikjang')
 
             # if move made, capture pieces as necessary and swap turn
             if valid_move:
