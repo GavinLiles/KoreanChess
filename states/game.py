@@ -14,6 +14,7 @@ class Game(State):
             'han': Player(self.board, 'han', Position.TOP)
         }
         self.current_player = 'cho'
+        self.player_in_check = None
         self.piece_count = self.board.piece_count()
 
     def process(self, event, mouse_pos):
@@ -21,12 +22,17 @@ class Game(State):
         
         # process each piece
         for piece in self.players[self.current_player].pieces:
-            valid_move, captured_piece = piece.process(self.board, event, mouse_pos)
             
-            # if move made, capture pieces as necessary and swap turn
+            # if player is in check, only allow for king to move,
+            # otherwise, any piece can be moved
+            if (not self.player_in_check) or (self.player_in_check and isinstance(piece, King)):
+                valid_move, captured_piece = piece.process(self.board, event, mouse_pos)
+            
+            # mark a player if they're in check
             if isinstance(piece, King) and piece.is_in_check(self.board):
-                print('CHECK!')
-                
+                self.player_in_check = piece.team
+
+            # if move made, capture pieces as necessary and swap turn
             if valid_move:
                 for player in ('cho', 'han'):
                     if captured_piece in self.players[player].pieces:

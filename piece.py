@@ -239,22 +239,26 @@ class King(Royalty):
             ( 0, 1), # right
             ]
         
+        # add valid moves
         possible_deltas = self.filter_moves(board, possible_deltas)
         for delta in possible_deltas:
             possible_spots.append(add_tuples(self.location, delta))
 
-        # palace diagonal moves
+        # add palace diagonal movement
         if self.location in self.PALACE_DIAGONAL:
-            x = self.location[0]
-            t = list(map(lambda d: add_tuples(self.location, d), self.PALACE_DIAGONAL[self.location]))
+            deltas = self.PALACE_DIAGONAL[self.location]
+            deltas = self.filter_moves(board, deltas)
+            t = list(map(lambda d: add_tuples(self.location, d), deltas))
             possible_spots.extend(t)
 
-        # find spots that King cant move to bc it will be captured if it do do that yk
+        # remove moves that will cause king to be in check
         matching_spots = []
         for row in board.grid:
             for item in row:
                 if item and not isinstance(item, King) and item.team != self.team:
-                    matching_spots.extend(set(item.get_possible_moves(board)).intersection(set(possible_spots)))
+                    matching_spots.extend(
+                        set(item.get_possible_moves(board)).intersection(set(possible_spots)))
+        
         return list(set(possible_spots) - set(matching_spots))
 
     def process(self, board, event, mouse_pos):
