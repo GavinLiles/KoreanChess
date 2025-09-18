@@ -45,6 +45,9 @@ class Game(State):
                         self.players[player].captured_pieces.append(captured_piece)
                 self._swap_turn()
 
+        if event.type == pygame.VIDEORESIZE:
+            self.board.update(self.screen)
+
 
     def render(self):
         self.board.render(self.screen)

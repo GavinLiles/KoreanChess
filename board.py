@@ -14,7 +14,8 @@ class Side(Enum):
 class Board():
 
     def __init__(self, surface):
-        self.background = pygame.image.load('assets/boards/Janggi_Board.png').convert()
+        self.background_name = 'assets/boards/Janggi_Board.png'
+        self.background = pygame.image.load(self.background_name).convert()
         self.boarder = pygame.image.load('assets/boards/Janggi_Board_Border.png').convert()
         self.grid = [ [None] * 9 for _ in range(10)] # array representation of board
         self._update_board_size()
@@ -56,6 +57,7 @@ class Board():
             return None
 
     def change_board(self, image):
+        self.background_name = image
         self.background = pygame.image.load(image).convert()
 
     def calculate_render_pos(self, grid_position:tuple[int]) -> tuple[float]:
@@ -88,6 +90,7 @@ class Board():
         self._update_board_size()
         self.SCREEN_CENTER = [i-(j/2) for i, j in zip(surface.get_rect().center, self._board_size)]
         surface_size = surface.get_size()
+
         # if the window is not in ratio of the board,
         # set board's height off window,
         # and use the ratio of the board to keep it scaled properly
@@ -95,7 +98,7 @@ class Board():
             scale = (surface_size[1]*RATIO, surface_size[1]-MARGIN)
 
         self.boarder = pygame.transform.scale(self.boarder, surface_size)
-        self.background = pygame.transform.scale(self.background, scale)
+        self.background = pygame.transform.scale(pygame.image.load(self.background_name).convert(), scale)
         self.update_piece_positions()
 
     def update_piece_positions(self):

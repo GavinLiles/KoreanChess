@@ -10,8 +10,6 @@ class MainMenu(State):
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
         self.container = container.Container()
 
-        button_size = (150, 70)
-
         button_traits = {
             'play': lambda: self.manager.change_state('pregame_swap'),
             'settings': lambda: self.manager.change_state('settings'),
@@ -20,9 +18,11 @@ class MainMenu(State):
         }
         
         # create buttons from dict, add to list
+        button_size = (150, 70)
         for label, function in button_traits.items():
             self.container.add_item(TextButton((0, 0), button_size, label, func=function))
 
+        # update position of container now that we have the size of container
         x = self.screen_size[0]/2 - self.container.get_size()[0]/2
         y = self.screen_size[1]/3
         self.container.set_pos((x, y))
@@ -34,12 +34,13 @@ class MainMenu(State):
         if event.type == pygame.VIDEORESIZE:
             self.screen_size = self.screen.get_size()
             self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
+            
+            # update position of container since window resized 
             x = self.screen_size[0]/2 - self.container.get_size()[0]/2
             y = self.screen_size[1]/3
             self.container.set_pos((x, y))
 
     def render(self):
-        pygame.draw.rect(self.screen, (255,255,0), (0, 0, self.screen_size[0], self.screen_size[1]))
         self.screen.blit(self.background, (0,0))
         self.container.render(self.screen)
 
