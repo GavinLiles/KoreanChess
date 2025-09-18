@@ -1,16 +1,16 @@
 import pygame
 from button import TextButton
 from states.state import State
+import container
 
 class MainMenu(State):
     def __init__(self, screen, manager):
         super().__init__(screen, manager) # call parent init
-        self.buttons = []
         self.title = self.DEFAULT_FONT.render('Korean Chess', False, (0,0,0))
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
-        
+        self.container = container.Container()
+
         button_size = (150, 70)
-        x_pos = (self.screen_size[0]/2)-(button_size[0]/2)
 
         button_traits = {
             'play': lambda: self.manager.change_state('pregame_swap'),
@@ -20,22 +20,28 @@ class MainMenu(State):
         }
         
         # create buttons from dict, add to list
-        button_spacing, y_pos_factor, y_offset = button_size[1]+10, 2, 200
         for label, function in button_traits.items():
-            y = y_offset + (button_spacing * y_pos_factor)
-            self.buttons.append(TextButton((x_pos, y), button_size, label, func=function))
-            y_pos_factor += 1
+            self.container.add_item(TextButton((0, 0), button_size, label, func=function))
+
+        x = self.screen_size[0]/2 - self.container.get_size()[0]/2
+        y = self.screen_size[1]/3
+        self.container.set_pos((x, y))
 
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)
-        for button in self.buttons:
-            button.process(event, mouse_pos)
+        self.container.process(event, mouse_pos)
+
+        if event.type == pygame.VIDEORESIZE:
+            self.screen_size = self.screen.get_size()
+            self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
+            x = self.screen_size[0]/2 - self.container.get_size()[0]/2
+            y = self.screen_size[1]/3
+            self.container.set_pos((x, y))
 
     def render(self):
         pygame.draw.rect(self.screen, (255,255,0), (0, 0, self.screen_size[0], self.screen_size[1]))
         self.screen.blit(self.background, (0,0))
-        for button in self.buttons:
-            button.render(self.screen)
+        self.container.render(self.screen)
 
         # render title
         title_size = self.DEFAULT_FONT.size('Korean Chess')
