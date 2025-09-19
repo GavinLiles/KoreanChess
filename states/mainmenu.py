@@ -8,7 +8,7 @@ class MainMenu(State):
         super().__init__(screen, manager) # call parent init
         self.title = self.DEFAULT_FONT.render('Korean Chess', False, (0,0,0))
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
-        self.container = container.Container()
+        self.container = container.VContainer()
 
         button_traits = {
             'play': lambda: self.manager.change_state('pregame_swap'),

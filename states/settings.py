@@ -2,6 +2,7 @@ import pygame
 from states.state import State
 from button import TextButton
 from text import Text
+import container
 
 class Settings(State):
     def __init__(self, screen, manager):
@@ -21,20 +22,15 @@ class Settings(State):
             for name, path in board_filenames.items()
         }
 
-        # button attributes
+        # init board_buttons
         button_size = (100, 75)
-        x_pos, y_pos = 0, 200
-        button_spacing = button_size[0]+10
-        width_of_row = (button_size[0] + button_spacing) * len(board_select_button_traits)
-        offset = (self.screen_size[0]-(width_of_row//2)) // 2
-
-        # button init
-        self.board_select_buttons = []
-        for i, (label, function) in enumerate(board_select_button_traits.items()):
-            x_pos = (button_spacing * i) + offset
-            self.board_select_buttons.append(
-                TextButton((x_pos, y_pos), button_size, label, func=function))
-
+        self.board_buttons = container.HContainer(x_margin=10)
+        for label, function in board_select_button_traits.items():
+            self.board_buttons.add_item(TextButton((0, 0), button_size, label, function))
+        x = self.screen_size[0]/2 - self.board_buttons.get_size()[0]/2
+        y = self.screen_size[1]/5 - self.board_buttons.get_size()[1]/2
+        self.board_buttons.set_pos((x,y))
+        
         button_size = (125, 50)
         x, y = (self.screen_size[0]/2)-(button_size[0]/2), 900
         self.return_button = TextButton(
@@ -48,8 +44,7 @@ class Settings(State):
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)
         
-        for button in self.board_select_buttons:
-            button.process(event, mouse_pos)
+        self.board_buttons.process(event, mouse_pos)
 
         self.return_button.process(event, mouse_pos)
 
@@ -57,8 +52,7 @@ class Settings(State):
         pygame.draw.rect(self.screen, 'grey', (0, 0, self.screen_size[0], self.screen_size[1]))
         
         self.return_button.render(self.screen)
-        for button in self.board_select_buttons:
-            button.render(self.screen)
+        self.board_buttons.render(self.screen)
         
         self.text.render(self.screen, (self.screen_size[0]/2-(self.text.size[0]/2), 100))
         

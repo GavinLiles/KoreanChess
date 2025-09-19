@@ -4,6 +4,7 @@ An implementation of chess made out of spite.
 
 ## TODO
 
+- change board and pieces graphics
 - add win conditions
 - add point tracker
 - multiplayer
