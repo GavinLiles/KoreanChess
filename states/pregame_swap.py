@@ -14,7 +14,7 @@ class PregameSwap(State):
         self.cho_player = Player(self.board, 'cho', Position.BOTTOM)
         self.han_player = Player(self.board, 'han', Position.TOP)
         
-        self.swap_buttons = container.HContainer(x_margin=100)
+        self.swap_buttons = container.HContainer(margin=100)
 
         # define buttons
         button_size = (150, 50)

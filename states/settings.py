@@ -7,6 +7,8 @@ import container
 class Settings(State):
     def __init__(self, screen, manager):
         super().__init__(screen, manager)
+        self.board_buttons = container.HContainer(margin=10)
+        self.v_container = container.VContainer(margin=10)
 
         # making button functions. they change the file used on the board
         board_filenames = {
@@ -24,13 +26,13 @@ class Settings(State):
 
         # init board_buttons
         button_size = (100, 75)
-        self.board_buttons = container.HContainer(x_margin=10)
         for label, function in board_select_button_traits.items():
             self.board_buttons.add_item(TextButton((0, 0), button_size, label, function))
+
         x = self.screen_size[0]/2 - self.board_buttons.get_size()[0]/2
         y = self.screen_size[1]/5 - self.board_buttons.get_size()[1]/2
         self.board_buttons.set_pos((x,y))
-        
+
         button_size = (125, 50)
         x, y = (self.screen_size[0]/2)-(button_size[0]/2), 900
         self.return_button = TextButton(
@@ -45,8 +47,12 @@ class Settings(State):
         super().process(event, mouse_pos)
         
         self.board_buttons.process(event, mouse_pos)
-
         self.return_button.process(event, mouse_pos)
+
+        if event.type == pygame.VIDEORESIZE:
+            x = self.screen_size[0]/2 - self.board_buttons.get_size()[0]/2
+            y = self.screen_size[1]/5 - self.board_buttons.get_size()[1]/2
+            self.board_buttons.set_pos((x,y))
 
     def render(self):
         pygame.draw.rect(self.screen, 'grey', (0, 0, self.screen_size[0], self.screen_size[1]))
