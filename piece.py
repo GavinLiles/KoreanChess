@@ -238,6 +238,10 @@ class King(Royalty):
             ( 0,-1), # left
             ( 0, 1), # right
             ]
+
+        if self.is_in_bikjang(board):
+            possible_deltas.remove((-1, 0))
+            possible_deltas.remove((1, 0))
         
         # add valid moves
         possible_deltas = self.filter_moves(board, possible_deltas)
@@ -258,7 +262,7 @@ class King(Royalty):
                 if item and not isinstance(item, King) and item.team != self.team:
                     matching_spots.extend(
                         set(item.get_possible_moves(board)).intersection(set(possible_spots)))
-        
+                
         return list(set(possible_spots) - set(matching_spots))
 
     def process(self, board, event, mouse_pos):
@@ -280,8 +284,6 @@ class King(Royalty):
         col = [col[row_index] for col in board.grid]
         pieces = [item for item in col if item] # remove empty space  
         return len(pieces) == 2 and isinstance(pieces[0], King) and isinstance(pieces[1], King)
-
-
 
 class Advisor(Royalty):
     def __init__(self, grid_pos, pos, size, team=None, international=True): 

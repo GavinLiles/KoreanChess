@@ -3,6 +3,7 @@ from states.state import State
 from board import Board
 from piece import King
 from player import Player, Position
+import window
 
 class Game(State):
     def __init__(self, screen, manager):
@@ -17,6 +18,7 @@ class Game(State):
         self.player_in_check = None
         self.bikjang_initiator = None
         self.piece_count = self.board.piece_count()
+        self.game_end = False
 
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)
@@ -33,9 +35,15 @@ class Game(State):
             if isinstance(piece, King):
                 if piece.is_in_check(self.board):
                     self.player_in_check = piece.team
-                elif piece.is_in_bikjang(self.board) and not self. bikjang_initiator:
+                
+                # if king is in bikjang and bikjang is not active
+                elif piece.is_in_bikjang(self.board) and not self.bikjang_initiator:
                     self.bikjang_initiator = self.current_player
                     print(self.current_player, 'initiated bikjang')
+
+                # if king is in bikjang and bikjang is already active
+                elif piece.is_in_bikjang(self.board) and self.bikjang_initiator != self.current_player:
+                    print('game ended')
 
             # if move made, capture pieces as necessary and swap turn
             if valid_move:

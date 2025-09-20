@@ -11,11 +11,11 @@ class Button:
         self.color = color
         self.pos = pos
         self.width, self.height = size
-        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
+        self._rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
         self.func = self._default_func if func is None else func # use deaf func if one not def
 
     def render(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
+        pygame.draw.rect(surface, self.color, self._rect)
 
     def is_left_click(self, event):
         return event.type == pygame.MOUSEBUTTONDOWN and event.button == 1
@@ -24,13 +24,13 @@ class Button:
         return event.type == pygame.MOUSEBUTTONDOWN and event.button == 3
 
     def is_clicked(self, event, mouse_pos):
-        return self.rect.collidepoint(mouse_pos) and self.is_left_click(event)
+        return self._rect.collidepoint(mouse_pos) and self.is_left_click(event)
 
     def is_right_clicked(self, event, mouse_pos):
-        return self.rect.collidepoint(mouse_pos) and self.is_right_click(event)
+        return self._rect.collidepoint(mouse_pos) and self.is_right_click(event)
 
     def is_hovered(self, mouse_pos):
-        return self.rect.collidepoint(mouse_pos)
+        return self._rect.collidepoint(mouse_pos)
 
     def process(self, event, mouse_pos):
         if self.is_hovered(mouse_pos):
@@ -42,7 +42,7 @@ class Button:
 
     def set_pos(self, new_pos):
         self.pos = new_pos
-        self.rect = pygame.Rect(new_pos[0], new_pos[1], self.width, self.height)
+        self._rect = pygame.Rect(new_pos[0], new_pos[1], self.width, self.height)
 
     def _default_func(self):
         print('default button function')
