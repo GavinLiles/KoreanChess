@@ -47,7 +47,7 @@ class VContainer(Container):
 
     def get_size(self) -> tuple[float,float]:
         x = max([item.width for item in self._items])
-        y = self._items[self.size-1].pos[1]-self.pos[1]
+        y = self._items[self.size-1].pos[1]-self.pos[1] + self._items[self.size-1].height
         return (x, y)
         
 
