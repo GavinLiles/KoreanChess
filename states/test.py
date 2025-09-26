@@ -1,13 +1,14 @@
 # test.py
 from states.state import State
 from timer import IncTimer
-import container, window, button
+import container, window, button, text
 
 class Test(State):
     def __init__(self, screen, manager):
         super().__init__(screen, manager)
         self.window = window.Window((0,0))
         self.window.add_item(IncTimer((0,0)))
+        self.window.add_item(text.Text(text='beans'))
 
     def process(self, event, mouse_pos):
         super().process(event, mouse_pos)

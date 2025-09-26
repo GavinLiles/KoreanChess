@@ -15,7 +15,7 @@ class Container:
             try:
                 item.process(event, mousepos)
             except Exception:
-                print('no process accessible')
+                pass
 
     def render(self, surface):
         for item in self._items:
