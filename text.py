@@ -21,5 +21,6 @@ class Text:
         self._text_surface = self._font.render(self._text, self._aa, self._color)
         self.rect = self._text_surface.get_rect()
 
-    def set_pos(self, pos:tuple[int,int]):
+    def set_pos(self, 
+    pos:tuple[int,int]):
         self.pos = pos

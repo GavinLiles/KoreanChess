@@ -1,19 +1,22 @@
 import pygame
 from button import TextButton
 from states.state import State
-import container
+import container, text
+from misc_functions import add_tuples
 
 class MainMenu(State):
     def __init__(self, screen, manager):
         super().__init__(screen, manager) # call parent init
-        self.title = self.DEFAULT_FONT.render('Korean Chess', False, (0,0,0))
+        self.title = text.Text(text='Korean Chess')
+        pos = (self.screen_size[0]/2-self.title.width/2, self.screen_size[0]/4-self.title.height/2)
+        self.title.set_pos(pos)
         self.background = pygame.transform.scale(pygame.image.load('assets/bg.jpg').convert(), self.screen_size)
         self.container = container.VContainer()
 
         button_traits = {
             'play': lambda: self.manager.change_state('pregame_swap'),
             'settings': lambda: self.manager.change_state('settings'),
-            'exit': lambda: exit(),  # or pygame.quit()
+            'exit': lambda: exit(),
             'test': lambda: self.manager.change_state('test'),
         }
         
@@ -44,10 +47,7 @@ class MainMenu(State):
         self.screen.blit(self.background, (0,0))
         self.container.render(self.screen)
 
-        # render title
-        title_size = self.DEFAULT_FONT.size('Korean Chess')
-        self.screen.blit(self.title, (self.screen_size[0]/2-(title_size[0]/2), 100))
-
+        self.title.render(self.screen)
     def set_state_manager(self, manager):
         self.manager = manager
 
